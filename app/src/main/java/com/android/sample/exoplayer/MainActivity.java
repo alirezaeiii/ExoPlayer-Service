@@ -11,13 +11,12 @@ import android.os.IBinder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 import static com.android.sample.exoplayer.MainService.SAMPLE_ID;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER;
 
-public class MainActivity extends AppCompatActivity implements ExoPlayer.EventListener {
+public class MainActivity extends AppCompatActivity {
 
     private PlayerView mPlayerView;
 
