@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
      * PlaybackState.
      *
      * @param state The PlaybackState of the MediaSession.
+     * @param sample The Sample object to display title and composer on Notification.
      */
     private void showNotification(PlaybackStateCompat state, Sample sample) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Id");
