@@ -186,8 +186,7 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
                     mediaSourcesToLoad[i] = mediaSource;
                 }
             }
-            ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource(mediaSourcesToLoad);
-            mExoPlayer.prepare(concatenatingMediaSource);
+            mExoPlayer.prepare(new ConcatenatingMediaSource(mediaSourcesToLoad));
             mExoPlayer.setPlayWhenReady(true);
         }
     }
