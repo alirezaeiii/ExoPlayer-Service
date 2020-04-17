@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
 
         // Initialize the player.
         initializePlayer();
+
+        showImageAndNotification();
     }
 
     /**
@@ -239,13 +241,21 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
                     mExoPlayer.getCurrentPosition(), 1f);
         }
         mMediaSession.setPlaybackState(mStateBuilder.build());
-        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-        mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this, sample.getSampleID()));
-        showNotification(mStateBuilder.build(), sample);
     }
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
+    }
+
+    @Override
+    public void onPositionDiscontinuity(int reason) {
+        showImageAndNotification();
+    }
+
+    private void showImageAndNotification() {
+        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+        mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this, sample.getSampleID()));
+        showNotification(mStateBuilder.build(), sample);
     }
 
     /**
