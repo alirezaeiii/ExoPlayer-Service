@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
         // Initialize the player.
         initializePlayer();
 
-        showImageAndNotification();
+        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+        mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this, sample.getSampleID()));
     }
 
     /**
@@ -237,10 +238,9 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
 
     @Override
     public void onPositionDiscontinuity(int reason) {
-        showImageAndNotification();
-    }
-
-    private void showImageAndNotification() {
+        mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
+                mExoPlayer.getCurrentPosition(), 1f);
+        mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this, sample.getSampleID()));
         showNotification(mStateBuilder.build(), sample);
