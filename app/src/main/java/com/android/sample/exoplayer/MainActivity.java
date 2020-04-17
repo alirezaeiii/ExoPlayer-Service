@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
 
         // Initialize the player.
         initializePlayer();
-
-        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-        mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this, sample.getSampleID()));
     }
 
     /**
@@ -231,15 +228,17 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
         }
-        mMediaSession.setPlaybackState(mStateBuilder.build());
-        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-        showNotification(mStateBuilder.build(), sample);
+        showImageAndNotification();
     }
 
     @Override
     public void onPositionDiscontinuity(int reason) {
         mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                 mExoPlayer.getCurrentPosition(), 1f);
+        showImageAndNotification();
+    }
+
+    private void showImageAndNotification() {
         mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this, sample.getSampleID()));
