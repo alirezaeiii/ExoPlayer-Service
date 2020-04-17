@@ -195,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
      */
     private void releasePlayer() {
         mNotificationManager.cancelAll();
+        mExoPlayer.removeListener(this);
         mExoPlayer.stop();
         mExoPlayer.release();
         mExoPlayer = null;
