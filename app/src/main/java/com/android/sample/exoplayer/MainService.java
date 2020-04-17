@@ -106,6 +106,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
             icon = R.drawable.exo_controls_pause;
             play_pause = getString(R.string.pause);
+            builder.setOngoing(true);
         } else {
             icon = R.drawable.exo_controls_play;
             play_pause = getString(R.string.play);
