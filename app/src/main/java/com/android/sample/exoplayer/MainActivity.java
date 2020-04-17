@@ -1,10 +1,11 @@
 package com.android.sample.exoplayer;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -13,7 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 
-public class MainActivity extends AppCompatActivity implements ExoPlayer.EventListener, MainService.ComposerCallback {
+import static com.android.sample.exoplayer.MainService.SAMPLE_ID;
+import static com.android.sample.exoplayer.MainService.STR_RECEIVER;
+
+public class MainActivity extends AppCompatActivity implements ExoPlayer.EventListener {
 
     private PlayerView mPlayerView;
 
@@ -28,11 +32,18 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
                 MainService.MainServiceBinder myService = (MainService.MainServiceBinder) service;
                 //Then we simply set the exoplayer instance on this view.
                 mPlayerView.setPlayer(myService.getExoPlayerInstance());
-                myService.setComposerCallback(MainActivity.this);
             }
         }
 
         public void onServiceDisconnected(ComponentName className) {
+        }
+    };
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int sampleId = intent.getIntExtra(SAMPLE_ID, -1);
+            mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, sampleId));
         }
     };
 
@@ -51,7 +62,14 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
     }
 
     @Override
-    public void setComposerDrawable(Drawable d) {
-        mPlayerView.setDefaultArtwork(d);
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mBroadcastReceiver);
     }
 }

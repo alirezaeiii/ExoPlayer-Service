@@ -7,7 +7,6 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -33,12 +32,13 @@ import java.util.List;
 public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
+    static final String STR_RECEIVER = "com.MainService.receiver";
+    static final String SAMPLE_ID = "id";
     private SimpleExoPlayer mExoPlayer;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private NotificationManager mNotificationManager;
     private List<Sample> mSamples = new ArrayList<>();
-    private ComposerCallback mComposerCallback;
 
     @Override
     public void onCreate() {
@@ -229,20 +229,22 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
         }
-        showNotification();
+        showNotificationAndDrawable();
     }
 
     @Override
     public void onPositionDiscontinuity(int reason) {
         mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                 mExoPlayer.getCurrentPosition(), 1f);
-        showNotification();
+        showNotificationAndDrawable();
     }
 
-    private void showNotification() {
+    private void showNotificationAndDrawable() {
         mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-        mComposerCallback.setComposerDrawable(Sample.getComposerArtBySampleID(this, sample.getSampleID()));
+        Intent intent = new Intent(STR_RECEIVER);
+        intent.putExtra(SAMPLE_ID, sample.getSampleID());
+        sendBroadcast(intent);
         showNotification(mStateBuilder.build(), sample);
     }
 
@@ -286,10 +288,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         SimpleExoPlayer getExoPlayerInstance() {
             return mExoPlayer;
         }
-
-        void setComposerCallback(ComposerCallback callback) {
-            mComposerCallback = callback;
-        }
     }
 
     /**
@@ -304,9 +302,5 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         public void onReceive(Context context, Intent intent) {
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
-    }
-
-    interface ComposerCallback {
-        void setComposerDrawable(Drawable d);
     }
 }
