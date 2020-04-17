@@ -230,6 +230,8 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
                     mExoPlayer.getCurrentPosition(), 1f);
         }
         mMediaSession.setPlaybackState(mStateBuilder.build());
+        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+        showNotification(mStateBuilder.build(), sample);
     }
 
     @Override
