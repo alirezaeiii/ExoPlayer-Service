@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
         Intent intent = new Intent(this, MainService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         startService(intent);
-
-        mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(this, 0));
     }
 
     @Override

@@ -37,13 +37,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private NotificationManager mNotificationManager;
-    private List<Sample> mSamples;
+    private List<Sample> mSamples = new ArrayList<>();
     private ComposerCallback mComposerCallback;
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return new MainServiceBinder();
-    }
 
     @Override
     public void onCreate() {
@@ -54,6 +49,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         // Initialize the player.
         initializePlayer();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new MainServiceBinder();
     }
 
     /**
@@ -164,12 +164,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             // Create an instance of the ExoPlayer.
             mExoPlayer = new SimpleExoPlayer.Builder(this).build();
 
-            // Set the ExoPlayer.EventListener to this activity.
-            mExoPlayer.addListener(this);
-
             List<Integer> sampleIDs = Sample.getAllSampleIDs(this);
             MediaSource[] mediaSourcesToLoad = new MediaSource[sampleIDs.size()];
-            mSamples = new ArrayList<>();
 
             for (int i = 0; i < sampleIDs.size(); i++) {
                 Sample sample = Sample.getSampleByID(this, i);
@@ -187,6 +183,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             }
             mExoPlayer.prepare(new ConcatenatingMediaSource(mediaSourcesToLoad));
             mExoPlayer.setPlayWhenReady(true);
+
+            // Set the ExoPlayer.EventListener to this service.
+            mExoPlayer.addListener(this);
         }
     }
 
@@ -243,9 +242,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private void showNotification() {
         mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-        if (mComposerCallback != null) {
-            mComposerCallback.setComposerDrawable(Sample.getComposerArtBySampleID(this, sample.getSampleID()));
-        }
+        mComposerCallback.setComposerDrawable(Sample.getComposerArtBySampleID(this, sample.getSampleID()));
         showNotification(mStateBuilder.build(), sample);
     }
 
