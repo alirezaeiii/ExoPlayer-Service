@@ -72,4 +72,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(mBroadcastReceiver);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(mConnection);
+    }
 }

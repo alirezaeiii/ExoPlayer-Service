@@ -37,7 +37,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private SimpleExoPlayer mExoPlayer;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
-    private NotificationManager mNotificationManager;
     private List<Sample> mSamples = new ArrayList<>();
 
     @Override
@@ -141,7 +140,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .setMediaSession(mMediaSession.getSessionToken())
                 .setShowActionsInCompactView(0, 1));
 
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String channelId = "Id";
@@ -149,11 +148,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                     channelId,
                     "Channel human readable title",
                     NotificationManager.IMPORTANCE_LOW);
-            mNotificationManager.createNotificationChannel(channel);
+            notificationManager.createNotificationChannel(channel);
             builder.setChannelId(channelId);
         }
 
-        mNotificationManager.notify(0, builder.build());
+        notificationManager.notify(0, builder.build());
     }
 
     /**
@@ -193,7 +192,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      * Release ExoPlayer.
      */
     private void releasePlayer() {
-        mNotificationManager.cancelAll();
         mExoPlayer.removeListener(this);
         mExoPlayer.stop();
         mExoPlayer.release();
@@ -201,7 +199,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     }
 
     /**
-     * Release the player when the activity is destroyed.
+     * Release the player when the service is destroyed.
      */
     @Override
     public void onDestroy() {
