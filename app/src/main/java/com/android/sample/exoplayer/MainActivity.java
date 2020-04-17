@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
                 MainService.MainServiceBinder myService = (MainService.MainServiceBinder) service;
                 //Then we simply set the exoplayer instance on this view.
                 mPlayerView.setPlayer(myService.getExoPlayerInstance());
+                mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, myService.getSampleId()));
             }
         }
 
