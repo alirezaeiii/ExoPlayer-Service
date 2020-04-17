@@ -28,6 +28,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".MainService$RestartService">
+            <intent-filter>
+                <action android:name="restartService" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

@@ -188,6 +188,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         }
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        Intent broadcastIntent = new Intent(this, RestartService.class);
+        broadcastIntent.setAction("restartService");
+        sendBroadcast(broadcastIntent);
+    }
+
     /**
      * Release ExoPlayer.
      */
@@ -303,6 +311,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
+        }
+    }
+
+    public static class RestartService extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            context.startService(new Intent(context, MainService.class));
         }
     }
 }
