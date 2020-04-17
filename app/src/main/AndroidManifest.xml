@@ -17,11 +17,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".MainActivity$MediaReceiver">
+
+        <service
+            android:name=".MainService"
+            android:exported="false"></service>
+
+        <receiver android:name=".MainService$MediaReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>
