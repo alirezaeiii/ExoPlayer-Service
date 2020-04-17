@@ -17,8 +17,9 @@ package com.android.sample.exoplayer;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.JsonReader;
 import android.widget.Toast;
@@ -57,21 +58,21 @@ class Sample {
 
     /**
      * Gets portrait of the composer for a sample by the sample ID.
-     * @param context The application context.
+     * @param context  The application context.
      * @param sampleID The sample ID.
-     * @return The portrait Bitmap.
+     * @return The portrait Drawable.
      */
-    static Bitmap getComposerArtBySampleID(Context context, int sampleID){
+    static Drawable getComposerArtBySampleID(Context context, int sampleID) {
         Sample sample = Sample.getSampleByID(context, sampleID);
         int albumArtID = context.getResources().getIdentifier(
                 sample != null ? sample.getAlbumArtID() : null, "drawable",
                 context.getPackageName());
-        return BitmapFactory.decodeResource(context.getResources(), albumArtID);
+        return new BitmapDrawable(context.getResources(), BitmapFactory.decodeResource(context.getResources(), albumArtID));
     }
 
     /**
      * Gets a single sample by its ID.
-     * @param context The application context.
+     * @param context  The application context.
      * @param sampleID The sample ID.
      * @return The sample object.
      */
@@ -99,7 +100,7 @@ class Sample {
      * @param context The application context.
      * @return The ArrayList of all sample IDs.
      */
-    static List<Integer> getAllSampleIDs(Context context){
+    static List<Integer> getAllSampleIDs(Context context) {
         JsonReader reader;
         List<Integer> sampleIDs = new ArrayList<>();
         try {

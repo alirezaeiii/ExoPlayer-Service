@@ -17,20 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
 
-import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -168,9 +162,7 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
     private void initializePlayer() {
         if (mExoPlayer == null) {
             // Create an instance of the ExoPlayer.
-            TrackSelector trackSelector = new DefaultTrackSelector();
-            LoadControl loadControl = new DefaultLoadControl();
-            mExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl);
+            mExoPlayer = new SimpleExoPlayer.Builder(this).build();
             mPlayerView.setPlayer(mExoPlayer);
 
             // Set the ExoPlayer.EventListener to this activity.
@@ -189,8 +181,8 @@ public class MainActivity extends AppCompatActivity implements ExoPlayer.EventLi
                     mSamples.add(sample);
                     // Prepare the MediaSource.
                     String userAgent = Util.getUserAgent(this, "ExoPlayer");
-                    MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(sample.getUri()), new DefaultDataSourceFactory(
-                            this, userAgent), new DefaultExtractorsFactory(), null, null);
+                    MediaSource mediaSource = new ProgressiveMediaSource.Factory(new DefaultDataSourceFactory(
+                            this, userAgent)).createMediaSource(Uri.parse(sample.getUri()));
                     mediaSourcesToLoad[i] = mediaSource;
                 }
             }
