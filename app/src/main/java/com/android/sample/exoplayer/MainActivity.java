@@ -54,7 +54,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the player view.
         mPlayerView = findViewById(R.id.playerView);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         //Start the service up with video playback information.
         Intent intent = new Intent(this, MainService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -74,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         unbindService(mConnection);
     }
 }
