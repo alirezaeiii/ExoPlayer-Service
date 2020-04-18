@@ -34,6 +34,7 @@ import java.util.List;
 public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
+    private static final int NOTIFICATION_ID = 1;
     static final String STR_RECEIVER = "com.MainService.receiver";
     static final String SAMPLE_ID = "id";
     private SimpleExoPlayer mExoPlayer;
@@ -157,10 +158,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         Notification notificationCompat = builder.build();
         if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            startForeground(1, notificationCompat);
+            startForeground(NOTIFICATION_ID, notificationCompat);
         } else {
             stopForeground(true);
-            mNotificationManager.notify(1, notificationCompat);
+            mNotificationManager.cancel(NOTIFICATION_ID);
+            mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
         }
     }
 
