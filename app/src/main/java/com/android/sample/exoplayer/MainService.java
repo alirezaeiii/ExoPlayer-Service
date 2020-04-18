@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
@@ -37,6 +38,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private SimpleExoPlayer mExoPlayer;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
+    private NotificationManager mNotificationManager;
     private List<Sample> mSamples = new ArrayList<>();
 
     @Override
@@ -141,7 +143,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .setMediaSession(mMediaSession.getSessionToken())
                 .setShowActionsInCompactView(0, 1));
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String channelId = "Id";
@@ -149,11 +151,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                     channelId,
                     "Channel human readable title",
                     NotificationManager.IMPORTANCE_LOW);
-            notificationManager.createNotificationChannel(channel);
+            mNotificationManager.createNotificationChannel(channel);
             builder.setChannelId(channelId);
         }
 
-        notificationManager.notify(0, builder.build());
+        mNotificationManager.notify(0, builder.build());
     }
 
     /**
@@ -201,6 +203,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      * Release ExoPlayer.
      */
     private void releasePlayer() {
+        mNotificationManager.cancelAll();
         mExoPlayer.removeListener(this);
         mExoPlayer.stop();
         mExoPlayer.release();
@@ -311,6 +314,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "MediaReceiver$onReceive()");
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
     }
@@ -319,6 +323,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "RestartService$onReceive()");
             context.startService(new Intent(context, MainService.class));
         }
     }
