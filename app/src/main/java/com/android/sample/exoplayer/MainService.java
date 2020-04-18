@@ -1,5 +1,6 @@
 package com.android.sample.exoplayer;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -108,7 +109,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
             icon = R.drawable.exo_controls_pause;
             play_pause = getString(R.string.pause);
-            builder.setOngoing(true);
         } else {
             icon = R.drawable.exo_controls_play;
             play_pause = getString(R.string.play);
@@ -155,7 +155,13 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             builder.setChannelId(channelId);
         }
 
-        mNotificationManager.notify(0, builder.build());
+        Notification notificationCompat = builder.build();
+        if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            startForeground(1, notificationCompat);
+        } else {
+            stopForeground(true);
+            mNotificationManager.notify(1, notificationCompat);
+        }
     }
 
     /**
