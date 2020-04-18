@@ -69,6 +69,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         mMediaSession = new MediaSessionCompat(this, TAG);
 
         // Enable callbacks from MediaButtons and TransportControls.
+        // noinspection deprecation
         mMediaSession.setFlags(
                 MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                         MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
