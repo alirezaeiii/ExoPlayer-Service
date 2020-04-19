@@ -143,7 +143,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .addAction(playPauseAction)
                 .addAction(nextAction).setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                 .setMediaSession(mMediaSession.getSessionToken())
-                .setShowActionsInCompactView(0, 1));
+                .setShowActionsInCompactView(1, 2));
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
