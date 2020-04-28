@@ -35,6 +35,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
     private static final int NOTIFICATION_ID = 1;
+    private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     static final String STR_RECEIVER = "com.MainService.receiver";
     static final String SAMPLE_ID = "id";
     private SimpleExoPlayer mExoPlayer;
@@ -282,7 +283,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         @Override
         public void onSkipToPrevious() {
-            mExoPlayer.seekTo(0);
+            if (mExoPlayer.getCurrentPosition() <= MAX_POSITION_FOR_SEEK_TO_PREVIOUS) {
+                mExoPlayer.previous();
+            } else {
+                mExoPlayer.seekTo(0);
+            }
         }
 
         @Override
