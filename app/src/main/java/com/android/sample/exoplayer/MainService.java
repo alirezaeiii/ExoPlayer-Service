@@ -179,7 +179,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             MediaSource[] mediaSourcesToLoad = new MediaSource[sampleIDs.size()];
 
             for (int i = 0; i < sampleIDs.size(); i++) {
-                Sample sample = Sample.getSampleByID(this, i);
+                Sample sample = Sample.getSampleByID(this, sampleIDs.get(i));
                 if (sample == null) {
                     Toast.makeText(this, getString(R.string.sample_not_found_error),
                             Toast.LENGTH_SHORT).show();
