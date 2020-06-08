@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -62,7 +63,11 @@ public class MainActivity extends AppCompatActivity {
         //Start the service up with video playback information.
         Intent intent = new Intent(this, MainService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
     }
 
     @Override
