@@ -31,6 +31,8 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.android.sample.exoplayer.MainActivity.startMyService;
+
 public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
@@ -337,7 +339,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "RestartService$onReceive()");
-            context.startService(new Intent(context, MainService.class));
+            startMyService(context);
         }
     }
 }
