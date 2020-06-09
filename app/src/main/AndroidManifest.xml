@@ -30,7 +30,9 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".MainService$RestartService">
+        <receiver
+            android:name=".MainService$RestartService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="restartService" />
             </intent-filter>
