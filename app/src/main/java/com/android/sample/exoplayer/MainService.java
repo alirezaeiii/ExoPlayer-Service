@@ -205,9 +205,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
-            startMyService(this);
-        } else if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Intent broadcastIntent = new Intent(this, RestartService.class);
             broadcastIntent.setAction("restartService");
             sendBroadcast(broadcastIntent);
