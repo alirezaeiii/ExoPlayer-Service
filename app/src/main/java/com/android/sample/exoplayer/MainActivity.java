@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         //Start the service up with video playback information.
         Intent intent = new Intent(this, MainService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        startMyService(this);
+        startMainService(this);
 
     }
 
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         unbindService(mConnection);
     }
 
-    static void startMyService(Context context) {
+    private static void startMainService(Context context) {
         Intent intent = new Intent(context, MainService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
