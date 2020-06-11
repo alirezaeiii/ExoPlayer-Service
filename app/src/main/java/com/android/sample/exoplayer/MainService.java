@@ -31,6 +31,8 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.android.sample.exoplayer.MainActivity.startMainService;
+
 public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
@@ -135,9 +137,13 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         PendingIntent contentPendingIntent = PendingIntent.getActivity
                 (this, 0, new Intent(this, MainActivity.class), 0);
 
+        Intent intent = new Intent(this, StopServiceBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 0, intent, 0);
+
         builder.setContentTitle(sample.getTitle())
                 .setContentText(sample.getComposer())
                 .setContentIntent(contentPendingIntent)
+                .setDeleteIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_music_note)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .addAction(restartAction)
@@ -198,6 +204,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             // Set the ExoPlayer.EventListener to this service.
             mExoPlayer.addListener(this);
         }
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        Intent broadcastIntent = new Intent(this, RestartService.class);
+        broadcastIntent.setAction("restartService");
+        sendBroadcast(broadcastIntent);
     }
 
     /**
@@ -321,6 +335,26 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "MediaReceiver$onReceive()");
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
+        }
+    }
+
+    public static class RestartService extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "RestartService$onReceive()");
+            startMainService(context);
+        }
+    }
+
+
+    public static class StopServiceBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "StopServiceBroadcastReceiver$onReceive()");
+            Intent stopIntent = new Intent(context, MainService.class);
+            context.stopService(stopIntent);
         }
     }
 }
