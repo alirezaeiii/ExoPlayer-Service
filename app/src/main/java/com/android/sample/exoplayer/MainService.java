@@ -208,6 +208,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
+        Log.d(TAG, "onTaskRemoved()");
         super.onTaskRemoved(rootIntent);
         Intent broadcastIntent = new Intent(this, RestartService.class);
         broadcastIntent.setAction("restartService");
@@ -230,6 +231,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      */
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy()");
         super.onDestroy();
         releasePlayer();
         mMediaSession.setActive(false);
