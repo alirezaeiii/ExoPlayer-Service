@@ -31,18 +31,8 @@
         </receiver>
 
         <receiver
-            android:name=".MainService$RestartService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="restartService" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
             android:name=".MainService$StopServiceBroadcastReceiver"
-            android:exported="false">
-        </receiver>
-
+            android:exported="false"></receiver>
 
     </application>
 

@@ -31,8 +31,6 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.android.sample.exoplayer.MainActivity.startMainService;
-
 public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
@@ -213,10 +211,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         super.onTaskRemoved(rootIntent);
         if (mStateBuilder.build().getState() == PlaybackStateCompat.STATE_PAUSED) {
             stopSelf();
-        } else {
-            Intent broadcastIntent = new Intent(this, RestartService.class);
-            broadcastIntent.setAction("restartService");
-            sendBroadcast(broadcastIntent);
         }
     }
 
@@ -344,16 +338,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
     }
-
-    public static class RestartService extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "RestartService$onReceive()");
-            startMainService(context);
-        }
-    }
-
 
     public static class StopServiceBroadcastReceiver extends BroadcastReceiver {
 

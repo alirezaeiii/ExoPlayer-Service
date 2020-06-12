@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         startMainService(this);
-
     }
 
     @Override
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         unbindService(mConnection);
     }
 
-    static void startMainService(Context context) {
+    private static void startMainService(Context context) {
         Intent intent = new Intent(context, MainService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
@@ -93,5 +92,4 @@ public class MainActivity extends AppCompatActivity {
             context.startService(intent);
         }
     }
-
 }
