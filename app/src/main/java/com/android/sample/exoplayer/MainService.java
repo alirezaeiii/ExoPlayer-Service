@@ -211,10 +211,13 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     public void onTaskRemoved(Intent rootIntent) {
         Log.d(TAG, "onTaskRemoved()");
         super.onTaskRemoved(rootIntent);
-        if(mStateBuilder.build().getState() == PlaybackStateCompat.STATE_PLAYING) {
+        if (mStateBuilder.build().getState() == PlaybackStateCompat.STATE_PLAYING) {
             Intent broadcastIntent = new Intent(this, RestartService.class);
             broadcastIntent.setAction("restartService");
             sendBroadcast(broadcastIntent);
+        } else if (mStateBuilder.build().getState() == PlaybackStateCompat.STATE_PAUSED) {
+            Intent intent = new Intent(this, StopServiceBroadcastReceiver.class);
+            sendBroadcast(intent);
         }
     }
 
