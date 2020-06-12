@@ -48,6 +48,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "onCreate()");
         super.onCreate();
 
         // Initialize the Media Session.
@@ -210,9 +211,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     public void onTaskRemoved(Intent rootIntent) {
         Log.d(TAG, "onTaskRemoved()");
         super.onTaskRemoved(rootIntent);
-        Intent broadcastIntent = new Intent(this, RestartService.class);
-        broadcastIntent.setAction("restartService");
-        sendBroadcast(broadcastIntent);
+        if(mStateBuilder.build().getState() == PlaybackStateCompat.STATE_PLAYING) {
+            Intent broadcastIntent = new Intent(this, RestartService.class);
+            broadcastIntent.setAction("restartService");
+            sendBroadcast(broadcastIntent);
+        }
     }
 
     /**
