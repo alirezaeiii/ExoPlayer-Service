@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +19,7 @@ import static com.android.sample.exoplayer.MainService.STR_RECEIVER;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private PlayerView mPlayerView;
 
     /**
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -59,37 +61,32 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        Log.d(TAG, "onStart()");
         super.onStart();
         //Start the service up with video playback information.
         Intent intent = new Intent(this, MainService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        startMainService(this);
+        startService(intent);
     }
 
     @Override
     protected void onResume() {
+        Log.d(TAG, "onResume()");
         super.onResume();
         registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER));
     }
 
     @Override
     protected void onPause() {
+        Log.d(TAG, "onPause()");
         super.onPause();
         unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "onStop()");
         super.onStop();
         unbindService(mConnection);
-    }
-
-    private static void startMainService(Context context) {
-        Intent intent = new Intent(context, MainService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else {
-            context.startService(intent);
-        }
     }
 }
