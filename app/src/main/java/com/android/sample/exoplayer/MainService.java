@@ -217,7 +217,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      * Release ExoPlayer.
      */
     private void releasePlayer() {
-        //mNotificationManager.cancelAll();
         mExoPlayer.removeListener(this);
         mExoPlayer.stop();
         mExoPlayer.release();
