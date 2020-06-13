@@ -41,7 +41,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private SimpleExoPlayer mExoPlayer;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
-    private NotificationManager mNotificationManager;
     private List<Sample> mSamples = new ArrayList<>();
 
     @Override
@@ -151,7 +150,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .setMediaSession(mMediaSession.getSessionToken())
                 .setShowActionsInCompactView(1, 2));
 
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String channelId = "Id";
@@ -159,14 +158,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                     channelId,
                     "Channel human readable title",
                     NotificationManager.IMPORTANCE_LOW);
-            mNotificationManager.createNotificationChannel(channel);
+            notificationManager.createNotificationChannel(channel);
             builder.setChannelId(channelId);
         }
 
         Notification notificationCompat = builder.build();
         if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-            stopForeground(false);
-            mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
+            stopForeground(true);
+            notificationManager.notify(NOTIFICATION_ID, notificationCompat);
         } else {
             startForeground(NOTIFICATION_ID, notificationCompat);
         }
@@ -218,7 +217,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      * Release ExoPlayer.
      */
     private void releasePlayer() {
-        mNotificationManager.cancelAll();
+        //mNotificationManager.cancelAll();
         mExoPlayer.removeListener(this);
         mExoPlayer.stop();
         mExoPlayer.release();
