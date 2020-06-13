@@ -164,7 +164,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         Notification notificationCompat = builder.build();
         if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-            stopForeground(true);
+            stopForeground(false);
             notificationManager.notify(NOTIFICATION_ID, notificationCompat);
         } else {
             startForeground(NOTIFICATION_ID, notificationCompat);
