@@ -9,10 +9,13 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import static com.android.sample.exoplayer.MainService.SAMPLE_ID;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER;
@@ -21,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private PlayerView mPlayerView;
+    private BottomSheetBehavior bottomSheetBehavior;
 
     /**
      * Create our connection to the service to be used in our bindService call.
@@ -57,6 +61,36 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the player view.
         mPlayerView = findViewById(R.id.playerView);
+
+        View bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomNavigationContainer);
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    // do stuff when the drawer is expanded
+                }
+
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    // do stuff when the drawer is collapsed
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // do stuff during the actual drag event for example
+                // animating a background color change based on the offset
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
