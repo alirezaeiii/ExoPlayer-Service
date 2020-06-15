@@ -16,15 +16,13 @@
         app:behavior_peekHeight="64dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <TextView
-            android:id="@+id/textBottom"
+        <ImageButton
+            android:id="@+id/btn_play_pause"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:background="@color/colorPrimary"
-            android:gravity="center"
-            android:text="Slide up"
-            android:textColor="@android:color/white"
-            android:textSize="22sp" />
+            android:onClick="playPauseClick"
+            android:src="@drawable/ic_pause" />
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/playerView"

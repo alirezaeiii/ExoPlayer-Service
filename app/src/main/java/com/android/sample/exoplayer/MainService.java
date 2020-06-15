@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -36,12 +37,22 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final String TAG = MainService.class.getSimpleName();
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
-    static final String STR_RECEIVER = "com.MainService.receiver";
+    static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
+    static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
     static final String SAMPLE_ID = "id";
+    static final String IS_PLAYING = "isPlaying";
     private SimpleExoPlayer mExoPlayer;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private List<Sample> mSamples = new ArrayList<>();
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
+            mExoPlayer.setPlayWhenReady(isPlaying);
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -53,6 +64,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         // Initialize the player.
         initializePlayer();
+
+        registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE));
     }
 
     @Override
@@ -217,6 +230,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      * Release ExoPlayer.
      */
     private void releasePlayer() {
+        unregisterReceiver(mBroadcastReceiver);
         mExoPlayer.removeListener(this);
         mExoPlayer.stop();
         mExoPlayer.release();
@@ -266,8 +280,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private void showNotificationAndDrawable() {
         mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-        Intent intent = new Intent(STR_RECEIVER);
+        Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
         intent.putExtra(SAMPLE_ID, sample.getSampleID());
+        intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
         sendBroadcast(intent);
         showNotification(mStateBuilder.build(), sample);
     }

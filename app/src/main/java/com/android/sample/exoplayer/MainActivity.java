@@ -6,12 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,14 +20,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import static com.android.sample.exoplayer.MainService.IS_PLAYING;
 import static com.android.sample.exoplayer.MainService.SAMPLE_ID;
-import static com.android.sample.exoplayer.MainService.STR_RECEIVER;
+import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
+import static com.android.sample.exoplayer.MainService.STR_RECEIVER_SERVICE;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private PlayerView mPlayerView;
     private BottomSheetBehavior<LinearLayout> mBottomSheetBehavior;
+    private ImageButton mBtnPlayPause;
+    private VectorDrawable mPlayDrawable;
+    private VectorDrawable mPauseDrawable;
+    private boolean isPlaying = true;
 
     /**
      * Create our connection to the service to be used in our bindService call.
@@ -51,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             int sampleId = intent.getIntExtra(SAMPLE_ID, -1);
+            isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
+            VectorDrawable drawable = isPlaying ? mPauseDrawable : mPlayDrawable;
+            mBtnPlayPause.setImageDrawable(drawable);
             mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, sampleId));
         }
     };
@@ -64,7 +74,9 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the player view.
         mPlayerView = findViewById(R.id.playerView);
 
-        final TextView textView = findViewById(R.id.textBottom);
+        mBtnPlayPause = findViewById(R.id.btn_play_pause);
+        mPlayDrawable = (VectorDrawable) getDrawable(R.drawable.ic_play);
+        mPauseDrawable = (VectorDrawable) getDrawable(R.drawable.ic_pause);
 
         LinearLayout bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomNavigationContainer);
@@ -76,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 float alpha = (float) (1 - (slideOffset * 2.8));
-                textView.setAlpha(alpha);
+                mBtnPlayPause.setAlpha(alpha);
             }
         });
     }
@@ -104,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         Log.d(TAG, "onResume()");
         super.onResume();
-        registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER));
+        registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_ACTIVITY));
     }
 
     @Override
@@ -119,5 +131,14 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onStop()");
         super.onStop();
         unbindService(mConnection);
+    }
+
+    public void playPauseClick(View view) {
+        isPlaying = !isPlaying;
+        VectorDrawable drawable = isPlaying ? mPauseDrawable : mPlayDrawable;
+        mBtnPlayPause.setImageDrawable(drawable);
+        Intent intent = new Intent(STR_RECEIVER_SERVICE);
+        intent.putExtra(IS_PLAYING, isPlaying);
+        sendBroadcast(intent);
     }
 }
