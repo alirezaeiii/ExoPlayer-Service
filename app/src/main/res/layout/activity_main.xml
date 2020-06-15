@@ -20,9 +20,10 @@
             android:id="@+id/textBottom"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:background="#f1f1f1"
+            android:background="@color/colorPrimary"
             android:gravity="center"
             android:text="Slide up"
+            android:textColor="@android:color/white"
             android:textSize="22sp" />
 
         <com.google.android.exoplayer2.ui.PlayerView

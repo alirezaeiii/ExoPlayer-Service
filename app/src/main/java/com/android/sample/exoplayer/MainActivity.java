@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private PlayerView mPlayerView;
-    private BottomSheetBehavior bottomSheetBehavior;
+    private BottomSheetBehavior<LinearLayout> mBottomSheetBehavior;
 
     /**
      * Create our connection to the service to be used in our bindService call.
@@ -62,32 +64,27 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the player view.
         mPlayerView = findViewById(R.id.playerView);
 
-        View bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomNavigationContainer);
-        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        final TextView textView = findViewById(R.id.textBottom);
+
+        LinearLayout bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomNavigationContainer);
+        mBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    // do stuff when the drawer is expanded
-                }
-
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    // do stuff when the drawer is collapsed
-                }
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                // do stuff during the actual drag event for example
-                // animating a background color change based on the offset
+                float alpha = (float) (1 - (slideOffset * 2.8));
+                textView.setAlpha(alpha);
             }
         });
     }
 
     @Override
     public void onBackPressed() {
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             super.onBackPressed();
         }
