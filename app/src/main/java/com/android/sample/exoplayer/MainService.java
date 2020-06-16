@@ -268,6 +268,15 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
         }
+        updateNotificationAndDrawable();
+    }
+
+    @Override
+    public void onPositionDiscontinuity(int reason) {
+        updateNotificationAndDrawable();
+    }
+
+    private void updateNotificationAndDrawable() {
         mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
@@ -277,6 +286,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         sendBroadcast(intent);
         showNotification(mStateBuilder.build(), sample);
     }
+
 
     /**
      * Media Session Callbacks, where all external clients control the player.
