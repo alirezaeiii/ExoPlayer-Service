@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
                 mPlayerView.setPlayer(myService.getExoPlayerInstance());
                 mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, myService.getSample().getSampleID()));
                 mTxtComposer.setText(myService.getSample().getComposer());
+                isPlaying = myService.getExoPlayerInstance().getPlayWhenReady();
+                updateBtnPlayPauseDrawable();
             }
         }
 
@@ -66,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
             int sampleId = intent.getIntExtra(SAMPLE_ID, -1);
             String composer = intent.getStringExtra(COMPOSER);
             isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
-            VectorDrawable drawable = isPlaying ? mPauseDrawable : mPlayDrawable;
-            mBtnPlayPause.setImageDrawable(drawable);
+            updateBtnPlayPauseDrawable();
             mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, sampleId));
             mTxtComposer.setText(composer);
         }
@@ -150,10 +151,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void playPauseClick(View view) {
         isPlaying = !isPlaying;
-        VectorDrawable drawable = isPlaying ? mPauseDrawable : mPlayDrawable;
-        mBtnPlayPause.setImageDrawable(drawable);
+        updateBtnPlayPauseDrawable();
         Intent intent = new Intent(STR_RECEIVER_SERVICE);
         intent.putExtra(IS_PLAYING, isPlaying);
         sendBroadcast(intent);
+    }
+
+    private void updateBtnPlayPauseDrawable() {
+        VectorDrawable drawable = isPlaying ? mPauseDrawable : mPlayDrawable;
+        mBtnPlayPause.setImageDrawable(drawable);
     }
 }
