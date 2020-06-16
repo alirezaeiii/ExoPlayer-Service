@@ -231,7 +231,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      * Release ExoPlayer.
      */
     private void releasePlayer() {
-        unregisterReceiver(mBroadcastReceiver);
         mExoPlayer.removeListener(this);
         mExoPlayer.stop();
         mExoPlayer.release();
@@ -246,6 +245,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         Log.d(TAG, "onDestroy()");
         super.onDestroy();
         releasePlayer();
+        unregisterReceiver(mBroadcastReceiver);
         mMediaSession.setActive(false);
     }
 
