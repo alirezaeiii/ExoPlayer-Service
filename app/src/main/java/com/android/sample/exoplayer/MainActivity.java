@@ -51,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
                 MainService.MainServiceBinder myService = (MainService.MainServiceBinder) service;
                 //Then we simply set the exoplayer instance on this view.
                 mPlayerView.setPlayer(myService.getExoPlayerInstance());
-                mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, myService.getSampleId()));
+                mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, myService.getSample().getSampleID()));
+                mTxtComposer.setText(myService.getSample().getComposer());
             }
         }
 

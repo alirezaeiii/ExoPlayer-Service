@@ -323,8 +323,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             return mExoPlayer;
         }
 
-        int getSampleId() {
-            return mSamples.get(mExoPlayer.getCurrentWindowIndex()).getSampleID();
+        Sample getSample() {
+            return mSamples.get(mExoPlayer.getCurrentWindowIndex());
         }
     }
 
