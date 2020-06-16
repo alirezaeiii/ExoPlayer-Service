@@ -40,6 +40,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
     static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
     static final String SAMPLE_ID = "id";
+    static final String COMPOSER = "composer";
     static final String IS_PLAYING = "isPlaying";
     private SimpleExoPlayer mExoPlayer;
     private static MediaSessionCompat mMediaSession;
@@ -267,21 +268,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
         }
-        showNotificationAndDrawable();
-    }
-
-    @Override
-    public void onPositionDiscontinuity(int reason) {
-        mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
-                mExoPlayer.getCurrentPosition(), 1f);
-        showNotificationAndDrawable();
-    }
-
-    private void showNotificationAndDrawable() {
         mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
         intent.putExtra(SAMPLE_ID, sample.getSampleID());
+        intent.putExtra(COMPOSER, sample.getComposer());
         intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
         sendBroadcast(intent);
         showNotification(mStateBuilder.build(), sample);

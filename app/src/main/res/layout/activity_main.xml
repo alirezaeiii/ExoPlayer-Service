@@ -6,30 +6,47 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottom_navigation_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="4dp"
-        android:orientation="vertical"
         app:behavior_hideable="false"
         app:behavior_peekHeight="64dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <ImageButton
-            android:id="@+id/btn_play_pause"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:background="@color/colorPrimary"
-            android:onClick="playPauseClick"
-            android:src="@drawable/ic_pause" />
-
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/playerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@id/bottom_bar"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@color/colorPrimary"
+            app:layout_constraintBottom_toTopOf="@+id/playerView">
+
+            <ImageButton
+                android:id="@+id/btn_play_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:onClick="playPauseClick"
+                android:src="@drawable/ic_pause" />
+
+            <TextView
+                android:id="@+id/txt_composer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

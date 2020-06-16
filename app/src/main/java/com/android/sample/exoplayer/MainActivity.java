@@ -13,13 +13,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import static com.android.sample.exoplayer.MainService.COMPOSER;
 import static com.android.sample.exoplayer.MainService.IS_PLAYING;
 import static com.android.sample.exoplayer.MainService.SAMPLE_ID;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
@@ -29,10 +32,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private PlayerView mPlayerView;
-    private BottomSheetBehavior<LinearLayout> mBottomSheetBehavior;
+    private BottomSheetBehavior<ConstraintLayout> mBottomSheetBehavior;
     private ImageButton mBtnPlayPause;
     private VectorDrawable mPlayDrawable;
     private VectorDrawable mPauseDrawable;
+    private TextView mTxtComposer;
+    private LinearLayout mBottomBar;
     private boolean isPlaying = true;
 
     /**
@@ -58,10 +63,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             int sampleId = intent.getIntExtra(SAMPLE_ID, -1);
+            String composer = intent.getStringExtra(COMPOSER);
             isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
             VectorDrawable drawable = isPlaying ? mPauseDrawable : mPlayDrawable;
             mBtnPlayPause.setImageDrawable(drawable);
             mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, sampleId));
+            mTxtComposer.setText(composer);
         }
     };
 
@@ -77,8 +84,10 @@ public class MainActivity extends AppCompatActivity {
         mBtnPlayPause = findViewById(R.id.btn_play_pause);
         mPlayDrawable = (VectorDrawable) getDrawable(R.drawable.ic_play);
         mPauseDrawable = (VectorDrawable) getDrawable(R.drawable.ic_pause);
+        mTxtComposer = findViewById(R.id.txt_composer);
+        mBottomBar = findViewById(R.id.bottom_bar);
 
-        LinearLayout bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
+        ConstraintLayout bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomNavigationContainer);
         mBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -88,7 +97,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 float alpha = (float) (1 - (slideOffset * 2.8));
-                mBtnPlayPause.setAlpha(alpha);
+                if(alpha < 0 && mBtnPlayPause.isEnabled()) {
+                    mBtnPlayPause.setEnabled(false);
+                } else {
+                    mBtnPlayPause.setEnabled(true);
+                    mBottomBar.setAlpha(alpha);
+                }
             }
         });
     }
