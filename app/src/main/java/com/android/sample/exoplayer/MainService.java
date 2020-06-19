@@ -224,11 +224,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             }
             mExoPlayer.prepare(new ConcatenatingMediaSource(mediaSourcesToLoad));
 
-            MainPosition currentPosition = Storage.getInstance(this).getPosition();
-            if(currentPosition == null) {
+            MainPosition mainPosition = Storage.getInstance(this).getPosition();
+            if(mainPosition == null) {
                 mExoPlayer.setPlayWhenReady(true);
             } else {
-                mExoPlayer.seekTo(currentPosition.getCurrentWindowIndex(), currentPosition.getCurrentPosition());
+                mExoPlayer.seekTo(mainPosition.getCurrentWindowIndex(), mainPosition.getCurrentPosition());
                 mExoPlayer.setPlayWhenReady(false);
             }
 
