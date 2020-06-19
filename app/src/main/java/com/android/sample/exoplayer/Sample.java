@@ -21,6 +21,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.JsonReader;
 import android.widget.Toast;
 
@@ -40,7 +42,7 @@ import java.util.List;
  * Java Object representing a single sample. Also includes utility methods for obtaining samples
  * from assets.
  */
-class Sample {
+class Sample implements Parcelable {
 
     private int mSampleID;
     private String mComposer;
@@ -54,6 +56,37 @@ class Sample {
         mTitle = title;
         mUri = uri;
         mAlbumArtID = albumArtID;
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(mSampleID);
+        out.writeString(mComposer);
+        out.writeString(mTitle);
+        out.writeString(mUri);
+        out.writeString(mAlbumArtID);
+    }
+
+    public static final Parcelable.Creator<Sample> CREATOR
+            = new Parcelable.Creator<Sample>() {
+        public Sample createFromParcel(Parcel in) {
+            return new Sample(in);
+        }
+
+        public Sample[] newArray(int size) {
+            return new Sample[size];
+        }
+    };
+
+    private Sample(Parcel in) {
+        mSampleID = in.readInt();
+        mComposer = in.readString();
+        mTitle = in.readString();
+        mUri = in.readString();
+        mAlbumArtID = in.readString();
     }
 
     /**
