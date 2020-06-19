@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -58,7 +59,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private BroadcastReceiver mStorageBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(!mExoPlayer.getPlayWhenReady()) {
+            if (!mExoPlayer.getPlayWhenReady()) {
                 MainPosition mainPosition = new MainPosition(mExoPlayer.getCurrentWindowIndex(),
                         mExoPlayer.getCurrentPosition());
                 Storage.getInstance(MainService.this).storePosition(mainPosition);
@@ -190,8 +191,12 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         Notification notificationCompat = builder.build();
         if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-            stopForeground(false);
-            notificationManager.notify(NOTIFICATION_ID, notificationCompat);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                stopForeground(STOP_FOREGROUND_DETACH);
+            } else {
+                stopForeground(false);
+                notificationManager.notify(NOTIFICATION_ID, notificationCompat);
+            }
         } else {
             startForeground(NOTIFICATION_ID, notificationCompat);
         }
@@ -225,7 +230,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             mExoPlayer.prepare(new ConcatenatingMediaSource(mediaSourcesToLoad));
 
             MainPosition mainPosition = Storage.getInstance(this).getPosition();
-            if(mainPosition == null) {
+            if (mainPosition == null) {
                 mExoPlayer.setPlayWhenReady(true);
             } else {
                 mExoPlayer.seekTo(mainPosition.getCurrentWindowIndex(), mainPosition.getCurrentPosition());
@@ -316,19 +321,16 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private class MySessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
-            Utils.startService(MainService.class, MainService.this);
             mExoPlayer.setPlayWhenReady(true);
         }
 
         @Override
         public void onPause() {
-            Utils.startService(MainService.class, MainService.this);
             mExoPlayer.setPlayWhenReady(false);
         }
 
         @Override
         public void onSkipToPrevious() {
-            Utils.startService(MainService.class, MainService.this);
             if (mExoPlayer.getCurrentPosition() <= MAX_POSITION_FOR_SEEK_TO_PREVIOUS) {
                 mExoPlayer.previous();
             } else {
@@ -338,7 +340,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         @Override
         public void onSkipToNext() {
-            Utils.startService(MainService.class, MainService.this);
             mExoPlayer.next();
         }
     }
@@ -373,9 +374,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         }
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, final Intent intent) {
             Log.d(TAG, "MediaReceiver$onReceive()");
-            Utils.startService(MainService.class, context);
+            context.startService(new Intent(context, MainService.class));
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
     }
