@@ -28,7 +28,7 @@ class Storage {
         String json = new Gson().toJson(currentPosition);
         SharedPreferences.Editor editor = mSharedPref.edit();
         editor.putString(CURRENT_POSITION, json);
-        editor.commit();
+        editor.apply();
     }
 
     MainPosition getPosition() {
