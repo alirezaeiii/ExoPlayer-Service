@@ -23,7 +23,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bottom_bar" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottom_bar"
             android:layout_width="match_parent"
             android:layout_height="64dp"
@@ -36,16 +36,46 @@
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
                 android:onClick="playPauseClick"
+                app:layout_constraintBottom_toBottomOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/guideline"
                 tools:src="@drawable/exo_controls_pause" />
 
             <TextView
-                android:id="@+id/txt_composer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textColor="@android:color/white" />
+                android:id="@+id/txt_song"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_play_pause"
+                tools:text="My Song" />
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/txt_composer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_play_pause"
+                app:layout_constraintTop_toBottomOf="@+id/guideline"
+                tools:text="Composer" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.5" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

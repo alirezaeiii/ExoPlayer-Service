@@ -12,7 +12,6 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -30,14 +29,18 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.android.sample.exoplayer.MainUtil.isServiceRunning;
 
 public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
+    private static final String EXTRA_INTERFACE = "interface";
     static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
     static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
     static final String STR_RECEIVER_SERVICE_STORAGE = "com.MainService.receiver.service.storage";
@@ -85,6 +88,17 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     @Override
     public IBinder onBind(Intent intent) {
         return new MainServiceBinder();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand()");
+        if (intent.hasExtra(EXTRA_INTERFACE) && intent.hasExtra(Intent.EXTRA_INTENT)) {
+            IMediaButtons iMediaButtons = (IMediaButtons) intent.getSerializableExtra(EXTRA_INTERFACE);
+            Intent myIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
+            iMediaButtons.execute(myIntent);
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 
     /**
@@ -195,8 +209,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 stopForeground(STOP_FOREGROUND_DETACH);
             } else {
                 stopForeground(false);
-                notificationManager.notify(NOTIFICATION_ID, notificationCompat);
             }
+            notificationManager.notify(NOTIFICATION_ID, notificationCompat);
         } else {
             startForeground(NOTIFICATION_ID, notificationCompat);
         }
@@ -368,7 +382,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     /**
      * Broadcast Receiver registered to receive the MEDIA_BUTTON intent coming from clients.
      */
-    public static class MediaReceiver extends BroadcastReceiver {
+    public static class MediaReceiver extends BroadcastReceiver implements IMediaButtons {
 
         public MediaReceiver() {
         }
@@ -376,7 +390,18 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         @Override
         public void onReceive(Context context, final Intent intent) {
             Log.d(TAG, "MediaReceiver$onReceive()");
-            context.startService(new Intent(context, MainService.class));
+            if (isServiceRunning(MainService.class, context)) {
+                MediaButtonReceiver.handleIntent(mMediaSession, intent);
+            } else {
+                Intent myIntent = new Intent(context, MainService.class);
+                myIntent.putExtra(EXTRA_INTERFACE, this);
+                myIntent.putExtra(Intent.EXTRA_INTENT, intent);
+                context.startService(myIntent);
+            }
+        }
+
+        @Override
+        public void execute(Intent intent) {
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
     }
@@ -389,5 +414,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             Intent stopIntent = new Intent(context, MainService.class);
             context.stopService(stopIntent);
         }
+    }
+
+    public interface IMediaButtons extends Serializable {
+        void execute(Intent intent);
     }
 }

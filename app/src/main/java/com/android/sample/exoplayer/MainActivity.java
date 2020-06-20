@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,8 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton mBtnPlayPause;
     private VectorDrawable mPlayDrawable;
     private VectorDrawable mPauseDrawable;
+    private TextView mTxtSong;
     private TextView mTxtComposer;
-    private LinearLayout mBottomBar;
+    private ConstraintLayout mBottomBar;
     private boolean isPlaying = true;
 
     /**
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 //Then we simply set the exoplayer instance on this view.
                 mPlayerView.setPlayer(myService.getExoPlayerInstance());
                 mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, myService.getSample().getSampleID()));
+                mTxtSong.setText(myService.getSample().getTitle());
                 mTxtComposer.setText(myService.getSample().getComposer());
                 isPlaying = myService.getExoPlayerInstance().getPlayWhenReady();
                 updateBtnPlayPauseDrawable();
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
             updateBtnPlayPauseDrawable();
             mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, sample.getSampleID()));
+            mTxtSong.setText(sample.getTitle());
             mTxtComposer.setText(sample.getComposer());
         }
     };
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         mBtnPlayPause = findViewById(R.id.btn_play_pause);
         mPlayDrawable = (VectorDrawable) getDrawable(R.drawable.exo_controls_play);
         mPauseDrawable = (VectorDrawable) getDrawable(R.drawable.exo_controls_pause);
+        mTxtSong = findViewById(R.id.txt_song);
         mTxtComposer = findViewById(R.id.txt_composer);
         mBottomBar = findViewById(R.id.bottom_bar);
 
