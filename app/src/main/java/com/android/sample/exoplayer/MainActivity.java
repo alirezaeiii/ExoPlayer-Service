@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 mTxtComposer.setText(myService.getSample().getComposer());
                 isPlaying = myService.getExoPlayerInstance().getPlayWhenReady();
                 updateBtnPlayPauseDrawable();
-                if (isPlaying) {
+                if (isPlaying && mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                     mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     mBtnPlayPause.setEnabled(false);
                     mBottomBar.setAlpha(0);
