@@ -391,7 +391,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         public void onReceive(Context context, final Intent intent) {
             Log.d(TAG, "MediaReceiver$onReceive()");
             if (isServiceRunning(MainService.class, context)) {
-                MediaButtonReceiver.handleIntent(mMediaSession, intent);
+                execute(intent);
             } else {
                 Intent myIntent = new Intent(context, MainService.class);
                 myIntent.putExtra(EXTRA_INTERFACE, this);
