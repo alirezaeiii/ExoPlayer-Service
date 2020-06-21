@@ -50,6 +50,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     private List<Sample> mSamples = new ArrayList<>();
+    private NotificationManager mNotificationManager;
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -191,7 +192,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .setMediaSession(mMediaSession.getSessionToken())
                 .setShowActionsInCompactView(1, 2));
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String channelId = "Id";
@@ -199,7 +200,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                     channelId,
                     "Channel human readable title",
                     NotificationManager.IMPORTANCE_LOW);
-            notificationManager.createNotificationChannel(channel);
+            mNotificationManager.createNotificationChannel(channel);
             builder.setChannelId(channelId);
         }
 
@@ -210,7 +211,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             } else {
                 stopForeground(false);
             }
-            notificationManager.notify(NOTIFICATION_ID, notificationCompat);
+            mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
         } else {
             startForeground(NOTIFICATION_ID, notificationCompat);
         }
@@ -261,6 +262,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         Log.d(TAG, "onTaskRemoved()");
         super.onTaskRemoved(rootIntent);
         if (!mExoPlayer.getPlayWhenReady()) {
+            mNotificationManager.cancel(NOTIFICATION_ID);
             stopSelf();
         }
     }
