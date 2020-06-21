@@ -8,10 +8,13 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTxtSong;
     private TextView mTxtComposer;
     private ConstraintLayout mBottomBar;
+    private ProgressBar mProgressBar;
     private boolean isPlaying = true;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     /**
      * Create our connection to the service to be used in our bindService call.
@@ -48,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             //We expect the service binder to be the main services binder.
             //As such we cast.
             if (service instanceof MainService.MainServiceBinder) {
-                MainService.MainServiceBinder myService = (MainService.MainServiceBinder) service;
+                final MainService.MainServiceBinder myService = (MainService.MainServiceBinder) service;
                 //Then we simply set the exoplayer instance on this view.
                 mPlayerView.setPlayer(myService.getExoPlayerInstance());
                 mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, myService.getSample().getSampleID()));
@@ -56,6 +61,14 @@ public class MainActivity extends AppCompatActivity {
                 mTxtComposer.setText(myService.getSample().getComposer());
                 isPlaying = myService.getExoPlayerInstance().getPlayWhenReady();
                 updateBtnPlayPauseDrawable();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
+                        mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
+                        mHandler.postDelayed(this, 1000);
+                    }
+                });
             }
         }
 
@@ -90,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         mTxtSong = findViewById(R.id.txt_song);
         mTxtComposer = findViewById(R.id.txt_composer);
         mBottomBar = findViewById(R.id.bottom_bar);
+        mProgressBar = findViewById(R.id.progress);
 
         ConstraintLayout bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomNavigationContainer);
