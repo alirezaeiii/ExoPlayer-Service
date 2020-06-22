@@ -324,16 +324,18 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (reason == DISCONTINUITY_REASON_SEEK) {
             Log.d(TAG, "DISCONTINUITY_REASON_SEEK");
             StatusBarNotification[] notifications = mNotificationManager.getActiveNotifications();
-            for (StatusBarNotification notification : notifications) {
-                if (notification.getId() == NOTIFICATION_ID) {
-                    Log.d(TAG, "updateNotificationAndDrawable()");
-                    updateNotificationAndDrawable();
-                    return;
+            if (notifications.length == 0) {
+                Log.d(TAG, "updateDrawable()");
+                Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+                updateDrawable(sample);
+            } else {
+                for (StatusBarNotification notification : notifications) {
+                    if (notification.getId() == NOTIFICATION_ID) {
+                        Log.d(TAG, "updateNotificationAndDrawable()");
+                        updateNotificationAndDrawable();
+                    }
                 }
             }
-            Log.d(TAG, "updateDrawable()");
-            Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-            updateDrawable(sample);
         } else if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION) {
             Log.d(TAG, "DISCONTINUITY_REASON_PERIOD_TRANSITION");
             updateNotificationAndDrawable();
