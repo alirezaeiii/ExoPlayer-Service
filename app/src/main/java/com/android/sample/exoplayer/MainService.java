@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.service.notification.StatusBarNotification;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
@@ -86,6 +87,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE));
         registerReceiver(mStorageBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE_STORAGE));
+
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
     @Override
@@ -193,8 +196,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .addAction(nextAction).setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                 .setMediaSession(mMediaSession.getSessionToken())
                 .setShowActionsInCompactView(1, 2));
-
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String channelId = "Id";
@@ -319,12 +320,22 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     @Override
     public void onPositionDiscontinuity(int reason) {
+        Log.d(TAG, "onPositionDiscontinuity()");
         if (reason == DISCONTINUITY_REASON_SEEK) {
-            Log.d(TAG, "onPositionDiscontinuity()-DISCONTINUITY_REASON_SEEK");
+            Log.d(TAG, "DISCONTINUITY_REASON_SEEK");
+            StatusBarNotification[] notifications = mNotificationManager.getActiveNotifications();
+            for (StatusBarNotification notification : notifications) {
+                if (notification.getId() == NOTIFICATION_ID) {
+                    Log.d(TAG, "updateNotificationAndDrawable()");
+                    updateNotificationAndDrawable();
+                    return;
+                }
+            }
+            Log.d(TAG, "updateDrawable()");
             Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
             updateDrawable(sample);
         } else if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION) {
-            Log.d(TAG, "onPositionDiscontinuity()-DISCONTINUITY_REASON_PERIOD_TRANSITION");
+            Log.d(TAG, "DISCONTINUITY_REASON_PERIOD_TRANSITION");
             updateNotificationAndDrawable();
         }
     }
