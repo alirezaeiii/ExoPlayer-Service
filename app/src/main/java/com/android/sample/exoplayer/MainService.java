@@ -51,6 +51,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private PlaybackStateCompat.Builder mStateBuilder;
     private List<Sample> mSamples = new ArrayList<>();
     private NotificationManager mNotificationManager;
+    private boolean isFirstTime;
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -84,6 +85,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE));
         registerReceiver(mStorageBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE_STORAGE));
+
+        isFirstTime = true;
     }
 
     @Override
@@ -327,7 +330,10 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         intent.putExtra(SAMPLE, sample);
         intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
         sendBroadcast(intent);
-        showNotification(mStateBuilder.build(), sample);
+        if(!isFirstTime) {
+            showNotification(mStateBuilder.build(), sample);
+        }
+        isFirstTime = false;
     }
 
 
