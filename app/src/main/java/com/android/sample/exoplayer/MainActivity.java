@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         Log.d(TAG, "onStop()");
         super.onStop();
+        mHandler.removeCallbacksAndMessages(null);
         unbindService(mConnection);
         Intent intent = new Intent(STR_RECEIVER_SERVICE_STORAGE);
         sendBroadcast(intent);
