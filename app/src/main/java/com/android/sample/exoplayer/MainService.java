@@ -86,6 +86,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE));
         registerReceiver(mStorageBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE_STORAGE));
 
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         isFirstTime = true;
     }
 
@@ -194,8 +195,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .addAction(nextAction).setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                 .setMediaSession(mMediaSession.getSessionToken())
                 .setShowActionsInCompactView(1, 2));
-
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             String channelId = "Id";
