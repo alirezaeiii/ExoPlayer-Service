@@ -51,7 +51,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private PlaybackStateCompat.Builder mStateBuilder;
     private List<Sample> mSamples = new ArrayList<>();
     private NotificationManager mNotificationManager;
-    private boolean isFirstTime;
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -85,9 +84,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE));
         registerReceiver(mStorageBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE_STORAGE));
-
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        isFirstTime = true;
     }
 
     @Override
@@ -196,26 +192,30 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .setMediaSession(mMediaSession.getSessionToken())
                 .setShowActionsInCompactView(1, 2));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String channelId = "Id";
-            NotificationChannel channel = new NotificationChannel(
-                    channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_LOW);
-            mNotificationManager.createNotificationChannel(channel);
-            builder.setChannelId(channelId);
-        }
-
-        Notification notificationCompat = builder.build();
-        if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                stopForeground(STOP_FOREGROUND_DETACH);
-            } else {
-                stopForeground(false);
-            }
-            mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
+        if (mNotificationManager == null) {
+            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         } else {
-            startForeground(NOTIFICATION_ID, notificationCompat);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                String channelId = "Id";
+                NotificationChannel channel = new NotificationChannel(
+                        channelId,
+                        "Channel human readable title",
+                        NotificationManager.IMPORTANCE_LOW);
+                mNotificationManager.createNotificationChannel(channel);
+                builder.setChannelId(channelId);
+            }
+
+            Notification notificationCompat = builder.build();
+            if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    stopForeground(STOP_FOREGROUND_DETACH);
+                } else {
+                    stopForeground(false);
+                }
+                mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
+            } else {
+                startForeground(NOTIFICATION_ID, notificationCompat);
+            }
         }
     }
 
@@ -329,10 +329,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         intent.putExtra(SAMPLE, sample);
         intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
         sendBroadcast(intent);
-        if(!isFirstTime) {
-            showNotification(mStateBuilder.build(), sample);
-        }
-        isFirstTime = false;
+        showNotification(mStateBuilder.build(), sample);
     }
 
 
