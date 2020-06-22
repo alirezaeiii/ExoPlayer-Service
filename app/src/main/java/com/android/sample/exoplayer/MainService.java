@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.android.sample.exoplayer.MainUtil.isServiceRunning;
+import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
+import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK;
 
 public class MainService extends Service implements ExoPlayer.EventListener {
 
@@ -192,30 +194,28 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .setMediaSession(mMediaSession.getSessionToken())
                 .setShowActionsInCompactView(1, 2));
 
-        if (mNotificationManager == null) {
-            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                String channelId = "Id";
-                NotificationChannel channel = new NotificationChannel(
-                        channelId,
-                        "Channel human readable title",
-                        NotificationManager.IMPORTANCE_LOW);
-                mNotificationManager.createNotificationChannel(channel);
-                builder.setChannelId(channelId);
-            }
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-            Notification notificationCompat = builder.build();
-            if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    stopForeground(STOP_FOREGROUND_DETACH);
-                } else {
-                    stopForeground(false);
-                }
-                mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId = "Id";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_LOW);
+            mNotificationManager.createNotificationChannel(channel);
+            builder.setChannelId(channelId);
+        }
+
+        Notification notificationCompat = builder.build();
+        if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                stopForeground(STOP_FOREGROUND_DETACH);
             } else {
-                startForeground(NOTIFICATION_ID, notificationCompat);
+                stopForeground(false);
             }
+            mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
+        } else {
+            startForeground(NOTIFICATION_ID, notificationCompat);
         }
     }
 
@@ -307,31 +307,47 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      */
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        if ((playbackState == ExoPlayer.STATE_READY) && playWhenReady) {
+        Log.d(TAG, "onPlayerStateChanged()");
+        if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
-        } else if ((playbackState == ExoPlayer.STATE_READY)) {
+        } else if (playbackState == ExoPlayer.STATE_READY) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
         }
-        updateNotificationAndDrawable();
     }
 
     @Override
     public void onPositionDiscontinuity(int reason) {
+        if (reason == DISCONTINUITY_REASON_SEEK) {
+            Log.d(TAG, "onPositionDiscontinuity()-DISCONTINUITY_REASON_SEEK");
+            Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+            updateDrawable(sample);
+        } else if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION) {
+            Log.d(TAG, "onPositionDiscontinuity()-DISCONTINUITY_REASON_PERIOD_TRANSITION");
+            updateNotificationAndDrawable();
+        }
+    }
+
+    @Override
+    public void onIsPlayingChanged(boolean isPlaying) {
+        Log.d(TAG, "onIsPlayingChanged()");
         updateNotificationAndDrawable();
     }
 
     private void updateNotificationAndDrawable() {
         mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+        updateDrawable(sample);
+        showNotification(mStateBuilder.build(), sample);
+    }
+
+    private void updateDrawable(Sample sample) {
         Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
         intent.putExtra(SAMPLE, sample);
         intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
         sendBroadcast(intent);
-        showNotification(mStateBuilder.build(), sample);
     }
-
 
     /**
      * Media Session Callbacks, where all external clients control the player.
