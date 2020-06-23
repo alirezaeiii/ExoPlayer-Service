@@ -61,14 +61,14 @@ public class MainActivity extends AppCompatActivity {
                 mTxtComposer.setText(myService.getSample().getComposer());
                 isPlaying = myService.getExoPlayerInstance().getPlayWhenReady();
                 updateBtnPlayPauseDrawable();
-                mHandler.post(new Runnable() {
+                mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
                         mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
                         mHandler.postDelayed(this, isPlaying ? 200 : 1000);
                     }
-                });
+                }, 100);
             }
         }
 
