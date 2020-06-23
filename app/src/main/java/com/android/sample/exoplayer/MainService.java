@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.service.notification.StatusBarNotification;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
@@ -35,8 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.android.sample.exoplayer.MainUtil.isServiceRunning;
-import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
-import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK;
 
 public class MainService extends Service implements ExoPlayer.EventListener {
 
@@ -319,25 +316,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     @Override
     public void onPositionDiscontinuity(int reason) {
         Log.d(TAG, "onPositionDiscontinuity()");
-        if (reason == DISCONTINUITY_REASON_SEEK) {
-            Log.d(TAG, "DISCONTINUITY_REASON_SEEK");
-            StatusBarNotification[] notifications = mNotificationManager.getActiveNotifications();
-            if (notifications.length == 0) {
-                Log.d(TAG, "updateDrawable()");
-                Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-                updateDrawable(sample);
-            } else {
-                for (StatusBarNotification notification : notifications) {
-                    if (notification.getId() == NOTIFICATION_ID) {
-                        Log.d(TAG, "updateNotificationAndDrawable()");
-                        updateNotificationAndDrawable();
-                    }
-                }
-            }
-        } else if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION) {
-            Log.d(TAG, "DISCONTINUITY_REASON_PERIOD_TRANSITION");
-            updateNotificationAndDrawable();
-        }
+        updateNotificationAndDrawable();
     }
 
     @Override
