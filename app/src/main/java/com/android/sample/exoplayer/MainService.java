@@ -66,11 +66,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private BroadcastReceiver mStorageBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (!mExoPlayer.getPlayWhenReady()) {
-                MainPosition mainPosition = new MainPosition(mExoPlayer.getCurrentWindowIndex(),
-                        mExoPlayer.getCurrentPosition());
-                Storage.getInstance(MainService.this).storePosition(mainPosition);
-            }
+            MainPosition mainPosition = new MainPosition(mExoPlayer.getCurrentWindowIndex(),
+                    mExoPlayer.getCurrentPosition());
+            Storage.getInstance(MainService.this).storePosition(mainPosition);
         }
     };
 
