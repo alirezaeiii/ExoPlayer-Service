@@ -64,8 +64,9 @@ public class MainActivity extends AppCompatActivity {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mProgressBar.setProgress((int) ((myService.getExoPlayerInstance().getCurrentPosition() * 100) / myService.getExoPlayerInstance().getDuration()));
-                        mHandler.postDelayed(this, 1000);
+                        mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
+                        mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
+                        mHandler.postDelayed(this, isPlaying ? 200 : 1000);
                     }
                 });
             }
