@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.android.sample.exoplayer.MainUtil.isServiceRunning;
+import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
+import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT;
 
 public class MainService extends Service implements ExoPlayer.EventListener {
 
@@ -307,6 +309,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
+            mExoPlayer.setPlayWhenReady(true);
         } else if (playbackState == ExoPlayer.STATE_READY) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
@@ -316,7 +319,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     @Override
     public void onPositionDiscontinuity(int reason) {
         Log.d(TAG, "onPositionDiscontinuity()");
-        updateNotificationAndDrawable();
+        if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION ||
+                reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+            mExoPlayer.setPlayWhenReady(true);
+            updateNotificationAndDrawable();
+        }
     }
 
     @Override
@@ -328,8 +335,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private void updateNotificationAndDrawable() {
         mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-        updateDrawable(sample);
         showNotification(mStateBuilder.build(), sample);
+        updateDrawable(sample);
     }
 
     private void updateDrawable(Sample sample) {
