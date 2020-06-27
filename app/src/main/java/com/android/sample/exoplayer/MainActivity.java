@@ -28,7 +28,6 @@ import static com.android.sample.exoplayer.MainService.IS_PLAYING;
 import static com.android.sample.exoplayer.MainService.SAMPLE;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_SERVICE;
-import static com.android.sample.exoplayer.MainService.STR_RECEIVER_SERVICE_STORAGE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -160,8 +159,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         mHandler.removeCallbacksAndMessages(null);
         unbindService(mConnection);
-        Intent intent = new Intent(STR_RECEIVER_SERVICE_STORAGE);
-        sendBroadcast(intent);
     }
 
     public void playPauseClick(View view) {

@@ -45,7 +45,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final String EXTRA_INTERFACE = "interface";
     static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
     static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
-    static final String STR_RECEIVER_SERVICE_STORAGE = "com.MainService.receiver.service.storage";
     static final String SAMPLE = "sample";
     static final String IS_PLAYING = "isPlaying";
     private SimpleExoPlayer mExoPlayer;
@@ -62,15 +61,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         }
     };
 
-    private BroadcastReceiver mStorageBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            MainPosition mainPosition = new MainPosition(mExoPlayer.getCurrentWindowIndex(),
-                    mExoPlayer.getCurrentPosition());
-            Storage.getInstance(MainService.this).storePosition(mainPosition);
-        }
-    };
-
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate()");
@@ -83,7 +73,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         initializePlayer();
 
         registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE));
-        registerReceiver(mStorageBroadcastReceiver, new IntentFilter(STR_RECEIVER_SERVICE_STORAGE));
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
@@ -289,7 +278,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         Storage.getInstance(this).storePosition(mainPosition);
         releasePlayer();
         unregisterReceiver(mBroadcastReceiver);
-        unregisterReceiver(mStorageBroadcastReceiver);
         mMediaSession.setActive(false);
     }
 
