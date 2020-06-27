@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
                     }
-                }, ONE_SECOND);
+                }, ONE_SECOND / 2);
             }
         }
 
