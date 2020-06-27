@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int ONE_SECOND = 1000;
     private PlayerView mPlayerView;
-    private BottomSheetBehavior<ConstraintLayout> mBottomSheetBehavior;
+    private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;
     private ImageButton mBtnPlayPause;
     private VectorDrawable mPlayDrawable;
     private VectorDrawable mPauseDrawable;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         mBottomBar = findViewById(R.id.bottom_bar);
         mProgressBar = findViewById(R.id.progress);
 
-        ConstraintLayout bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
+        FrameLayout bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomNavigationContainer);
         mBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
