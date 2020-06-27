@@ -32,6 +32,7 @@ import static com.android.sample.exoplayer.MainService.STR_RECEIVER_SERVICE;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int ONE_SECOND = 1000;
     private PlayerView mPlayerView;
     private BottomSheetBehavior<ConstraintLayout> mBottomSheetBehavior;
     private ImageButton mBtnPlayPause;
@@ -65,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
                         mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
-                        mHandler.postDelayed(this, isPlaying ? 0 : 1000);
+                        mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
                     }
-                }, 1000);
+                }, ONE_SECOND);
             }
         }
 
