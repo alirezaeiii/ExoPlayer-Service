@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout mBottomBar;
     private ProgressBar mProgressBar;
     private boolean isPlaying = true;
+    private boolean shouldAnimate;
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
     /**
@@ -65,7 +66,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
-                        mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
+                        if (shouldAnimate) {
+                            ProgressBarAnimation anim = new ProgressBarAnimation(mProgressBar,
+                                    mProgressBar.getProgress(), myService.getExoPlayerInstance().getCurrentPosition());
+                            anim.setDuration(ONE_SECOND / 2);
+                            mProgressBar.startAnimation(anim);
+                            shouldAnimate = false;
+                        } else {
+                            mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
+                        }
                         mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
                     }
                 }, ONE_SECOND);
@@ -144,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         Log.d(TAG, "onResume()");
         super.onResume();
+        this.shouldAnimate = true;
         registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_ACTIVITY));
     }
 
