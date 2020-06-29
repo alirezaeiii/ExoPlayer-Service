@@ -25,6 +25,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import java.util.Objects;
+
 import static com.android.sample.exoplayer.MainService.IS_PLAYING;
 import static com.android.sample.exoplayer.MainService.SAMPLE;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
@@ -58,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
                 final MainService.MainServiceBinder myService = (MainService.MainServiceBinder) service;
                 //Then we simply set the exoplayer instance on this view.
                 mPlayerView.setPlayer(myService.getExoPlayerInstance());
-                mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, myService.getSample().getSampleID()));
+                mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(
+                        MainActivity.this,
+                        myService.getSample().getSampleID()));
                 mTxtSong.setText(myService.getSample().getTitle());
                 mTxtComposer.setText(myService.getSample().getComposer());
                 isPlaying = myService.getExoPlayerInstance().getPlayWhenReady();
@@ -92,7 +96,9 @@ public class MainActivity extends AppCompatActivity {
             Sample sample = intent.getParcelableExtra(SAMPLE);
             isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
             updateBtnPlayPauseDrawable();
-            mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(MainActivity.this, sample.getSampleID()));
+            mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(
+                    MainActivity.this,
+                    Objects.requireNonNull(sample).getSampleID()));
             mTxtSong.setText(sample.getTitle());
             mTxtComposer.setText(sample.getComposer());
         }
