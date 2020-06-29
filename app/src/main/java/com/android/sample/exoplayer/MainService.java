@@ -190,6 +190,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .setSmallIcon(R.drawable.ic_music_note)
                 .setLargeIcon(largeImage)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
                 .addAction(restartAction)
                 .addAction(playPauseAction)
                 .addAction(nextAction).setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
