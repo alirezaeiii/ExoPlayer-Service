@@ -196,6 +196,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                     channelId,
                     getString(R.string.notification_channel_name),
                     NotificationManager.IMPORTANCE_LOW);
+            channel.setShowBadge(false);
             mNotificationManager.createNotificationChannel(channel);
             builder.setChannelId(channelId);
         }
