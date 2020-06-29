@@ -9,6 +9,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -138,7 +140,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      * @param sample The Sample object to display title and composer on Notification.
      */
     private void showNotification(PlaybackStateCompat state, Sample sample) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Id");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.notification_channel_id));
 
         int icon;
         String play_pause;
@@ -166,16 +168,21 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                         (this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT));
 
         PendingIntent contentPendingIntent = PendingIntent.getActivity
-                (this, 0, new Intent(this, MainActivity.class), 0);
+                (this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intent = new Intent(this, StopServiceBroadcastReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 0, intent, 0);
+
+        Bitmap largeImage = ((BitmapDrawable) Sample.getComposerArtBySampleID(
+                this,
+                sample.getSampleID())).getBitmap();
 
         builder.setContentTitle(sample.getTitle())
                 .setContentText(sample.getComposer())
                 .setContentIntent(contentPendingIntent)
                 .setDeleteIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_music_note)
+                .setLargeIcon(largeImage)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .addAction(restartAction)
                 .addAction(playPauseAction)
@@ -184,10 +191,10 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 .setShowActionsInCompactView(1, 2));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String channelId = "Id";
+            String channelId = getString(R.string.notification_channel_id);
             NotificationChannel channel = new NotificationChannel(
                     channelId,
-                    "Channel human readable title",
+                    getString(R.string.notification_channel_name),
                     NotificationManager.IMPORTANCE_LOW);
             mNotificationManager.createNotificationChannel(channel);
             builder.setChannelId(channelId);

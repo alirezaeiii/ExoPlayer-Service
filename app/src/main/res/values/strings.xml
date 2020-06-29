@@ -6,4 +6,6 @@
     <string name="pause">Pause</string>
     <string name="restart">Restart</string>
     <string name="next">Next</string>
+    <string name="notification_channel_id" translatable="false">music_channel</string>
+    <string name="notification_channel_name" translatable="true">Music player</string>
 </resources>
