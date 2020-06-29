@@ -14,7 +14,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -57,6 +59,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private MediaMetadataCompat.Builder mMetadataBuilder;
     private List<Sample> mSamples = new ArrayList<>();
     private NotificationManager mNotificationManager;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -293,6 +296,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         Storage.getInstance(this).storePosition(mainPosition);
         releasePlayer();
         unregisterReceiver(mBroadcastReceiver);
+        mHandler.removeCallbacksAndMessages(null);
         mMediaSession.setActive(false);
     }
 
@@ -336,9 +340,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     }
 
     private void updateNotificationAndDrawable() {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
+                mMediaSession.setMetadata(mMetadataBuilder.build());
+            }
+        }, 50);
         mMediaSession.setPlaybackState(mStateBuilder.build());
-        mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
-        mMediaSession.setMetadata(mMetadataBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         showNotification(mStateBuilder.build(), sample);
         updateDrawable(sample);
