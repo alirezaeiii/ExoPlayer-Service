@@ -340,10 +340,10 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     }
 
     private void updateNotificationAndDrawable() {
+        mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
                 mMediaSession.setMetadata(mMetadataBuilder.build());
             }
         }, 50);
