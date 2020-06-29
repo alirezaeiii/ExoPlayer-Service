@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
@@ -53,6 +54,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private SimpleExoPlayer mExoPlayer;
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
+    private MediaMetadataCompat.Builder mMetadataBuilder;
     private List<Sample> mSamples = new ArrayList<>();
     private NotificationManager mNotificationManager;
 
@@ -121,10 +123,13 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                                 PlaybackStateCompat.ACTION_PAUSE |
                                 PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
                                 PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                                PlaybackStateCompat.ACTION_SEEK_TO);
 
         mMediaSession.setPlaybackState(mStateBuilder.build());
 
+        mMetadataBuilder = new MediaMetadataCompat.Builder();
+        mMediaSession.setMetadata(mMetadataBuilder.build());
 
         // MySessionCallback has methods that handle callbacks from a media controller.
         mMediaSession.setCallback(new MySessionCallback());
@@ -331,6 +336,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     private void updateNotificationAndDrawable() {
         mMediaSession.setPlaybackState(mStateBuilder.build());
+        mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
+        mMediaSession.setMetadata(mMetadataBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         showNotification(mStateBuilder.build(), sample);
         updateDrawable(sample);
@@ -369,6 +376,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         @Override
         public void onSkipToNext() {
             mExoPlayer.next();
+        }
+
+        @Override
+        public void onSeekTo(long pos) {
+            mExoPlayer.seekTo(pos);
         }
     }
 
