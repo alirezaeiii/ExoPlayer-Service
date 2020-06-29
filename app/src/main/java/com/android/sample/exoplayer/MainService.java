@@ -34,6 +34,7 @@ import com.google.android.exoplayer2.util.Util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.android.sample.exoplayer.MainUtil.isServiceRunning;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
@@ -88,7 +89,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand()");
         if (intent.hasExtra(EXTRA_INTERFACE) && intent.hasExtra(Intent.EXTRA_INTENT)) {
-            IMediaButtons iMediaButtons = (IMediaButtons) intent.getSerializableExtra(EXTRA_INTERFACE);
+            IMediaButtons iMediaButtons = (IMediaButtons) Objects.requireNonNull(intent.getSerializableExtra(EXTRA_INTERFACE));
             Intent myIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
             iMediaButtons.execute(myIntent);
         }
