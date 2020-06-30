@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.android.sample.exoplayer.MainUtil.isServiceRunning;
-import static com.android.sample.exoplayer.MainUtil.startMainService;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT;
 
@@ -220,9 +219,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 stopForeground(false);
             }
             mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                stopSelf();
-            }
         } else {
             startForeground(NOTIFICATION_ID, notificationCompat);
         }
@@ -398,7 +394,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             if (mExoPlayer == null) {
                 Intent myIntent = new Intent(getApplicationContext(), MainService.class);
                 myIntent.putExtra(POSITION, pos);
-                startMainService(getApplicationContext(), myIntent);
+                startService(myIntent);
             } else {
                 mExoPlayer.seekTo(pos);
             }
@@ -442,7 +438,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             } else {
                 Intent myIntent = new Intent(context, MainService.class);
                 myIntent.putExtra(Intent.EXTRA_INTENT, intent);
-                startMainService(context, myIntent);
+                context.startService(myIntent);
             }
         }
     }
