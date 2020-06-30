@@ -31,6 +31,7 @@ import static com.android.sample.exoplayer.MainService.IS_PLAYING;
 import static com.android.sample.exoplayer.MainService.SAMPLE;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_SERVICE;
+import static com.android.sample.exoplayer.MainUtil.startMainService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         //Start the service up with video playback information.
         Intent intent = new Intent(this, MainService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        startService(intent);
+        startMainService(this, intent);
     }
 
     @Override

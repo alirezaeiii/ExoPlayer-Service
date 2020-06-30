@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.android.sample.exoplayer.MainUtil.isServiceRunning;
+import static com.android.sample.exoplayer.MainUtil.startMainService;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT;
 
@@ -46,6 +47,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final String TAG = MainService.class.getSimpleName();
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
+    private static final String POSITION = "position";
     static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
     static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
     static final String SAMPLE = "sample";
@@ -93,6 +95,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (intent.hasExtra(Intent.EXTRA_INTENT)) {
             Intent myIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
             MediaButtonReceiver.handleIntent(mMediaSession, myIntent);
+        } else if (intent.hasExtra(POSITION)) {
+            long position = intent.getLongExtra(POSITION, 0);
+            mExoPlayer.seekTo(position);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -215,6 +220,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 stopForeground(false);
             }
             mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                stopSelf();
+            }
         } else {
             startForeground(NOTIFICATION_ID, notificationCompat);
         }
@@ -386,7 +394,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         @Override
         public void onSeekTo(long pos) {
-            mExoPlayer.seekTo(pos);
+            Log.d(TAG, "onSeekTo()");
+            if (mExoPlayer == null) {
+                Intent myIntent = new Intent(getApplicationContext(), MainService.class);
+                myIntent.putExtra(POSITION, pos);
+                startMainService(getApplicationContext(), myIntent);
+            } else {
+                mExoPlayer.seekTo(pos);
+            }
         }
     }
 
@@ -427,7 +442,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             } else {
                 Intent myIntent = new Intent(context, MainService.class);
                 myIntent.putExtra(Intent.EXTRA_INTENT, intent);
-                context.startService(myIntent);
+                startMainService(context, myIntent);
             }
         }
     }
