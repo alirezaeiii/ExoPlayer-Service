@@ -5,33 +5,33 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 
-class Storage {
+class MainStorage {
 
     private static final String MY_PREFERENCES = "MyPrefs";
     private static final String CURRENT_POSITION = "position";
-    private static Storage sInstance;
+    private static MainStorage sInstance;
     private SharedPreferences mSharedPref;
 
-    private Storage(Context context) {
+    private MainStorage(Context context) {
         mSharedPref = context.getSharedPreferences(MY_PREFERENCES, Context.MODE_PRIVATE);
     }
 
-    public synchronized static Storage getInstance(Context context) {
+    public synchronized static MainStorage getInstance(Context context) {
         if (sInstance == null) {
             //Use application Context to prevent leak.
-            sInstance = new Storage(context.getApplicationContext());
+            sInstance = new MainStorage(context.getApplicationContext());
         }
         return sInstance;
     }
 
-    void storePosition(MainPosition currentPosition) {
+    public void storePosition(MainPosition currentPosition) {
         String json = new Gson().toJson(currentPosition);
         SharedPreferences.Editor editor = mSharedPref.edit();
         editor.putString(CURRENT_POSITION, json);
         editor.apply();
     }
 
-    MainPosition getPosition() {
+    public MainPosition getPosition() {
         String json = mSharedPref.getString(CURRENT_POSITION, null);
         return new Gson().fromJson(json, MainPosition.class);
     }

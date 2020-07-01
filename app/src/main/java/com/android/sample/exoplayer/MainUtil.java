@@ -2,6 +2,8 @@ package com.android.sample.exoplayer;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 
 class MainUtil {
 
@@ -13,5 +15,13 @@ class MainUtil {
             }
         }
         return false;
+    }
+
+    static void startMainService(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
     }
 }
