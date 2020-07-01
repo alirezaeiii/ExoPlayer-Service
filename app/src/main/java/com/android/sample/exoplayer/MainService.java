@@ -48,6 +48,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     private static final String POSITION = "position";
+    private static final long ONE_SECOND = 1000;
     static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
     static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
     static final String SAMPLE = "sample";
@@ -300,7 +301,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         unregisterReceiver(mBroadcastReceiver);
         mHandler.removeCallbacksAndMessages(null);
         mMediaSession.setActive(false);
-        if(MainStorage.getInstance(this).shouldRestartService()) {
+        if (MainStorage.getInstance(this).shouldRestartService()) {
             Intent intent = new Intent(this, RestartServiceBroadcastReceiver.class);
             sendBroadcast(intent);
         } else {
@@ -403,7 +404,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             public void run() {
                 mMediaSession.setMetadata(mMetadataBuilder.build());
             }
-        }, 50);
+        }, ONE_SECOND / 20);
         mMediaSession.setPlaybackState(mStateBuilder.build());
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         showNotification(mStateBuilder.build(), sample);
@@ -424,7 +425,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             public void run() {
                 updateNotificationAndDrawable();
             }
-        }, 500);
+        }, ONE_SECOND / 2);
     }
 
     /**
