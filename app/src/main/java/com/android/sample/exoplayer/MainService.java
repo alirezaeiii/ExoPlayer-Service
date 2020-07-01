@@ -220,9 +220,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 stopForeground(false);
             }
             mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                stopSelf();
-            }
         } else {
             startForeground(NOTIFICATION_ID, notificationCompat);
         }
@@ -344,6 +341,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     }
 
     private void updateNotificationAndDrawable() {
+        Log.d(TAG, "updateNotificationAndDrawable()");
         mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
         mHandler.postDelayed(new Runnable() {
             @Override
@@ -399,6 +397,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 Intent myIntent = new Intent(getApplicationContext(), MainService.class);
                 myIntent.putExtra(POSITION, pos);
                 startMainService(getApplicationContext(), myIntent);
+
             } else {
                 mExoPlayer.seekTo(pos);
             }
