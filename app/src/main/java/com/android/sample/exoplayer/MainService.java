@@ -27,7 +27,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
 
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -318,7 +317,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
-            mExoPlayer.setPlayWhenReady(true);
+            playAndUpdateNotificationAndDrawable();
         } else if (playbackState == ExoPlayer.STATE_READY) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
@@ -329,16 +328,63 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     public void onPositionDiscontinuity(int reason) {
         Log.d(TAG, "onPositionDiscontinuity()");
         if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION ||
-                reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT ||
-                reason == Player.DISCONTINUITY_REASON_SEEK) {
-            mExoPlayer.setPlayWhenReady(true);
-            updateNotificationAndDrawable();
+                reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+            playAndUpdateNotificationAndDrawable();
         }
     }
 
     @Override
     public void onIsPlayingChanged(boolean isPlaying) {
         Log.d(TAG, "onIsPlayingChanged()");
+        updateNotificationAndDrawable();
+    }
+
+    /**
+     * Media Session Callbacks, where all external clients control the player.
+     */
+    private class MySessionCallback extends MediaSessionCompat.Callback {
+        @Override
+        public void onPlay() {
+            mExoPlayer.setPlayWhenReady(true);
+        }
+
+        @Override
+        public void onPause() {
+            mExoPlayer.setPlayWhenReady(false);
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            if (mExoPlayer.getCurrentPosition() <= MAX_POSITION_FOR_SEEK_TO_PREVIOUS) {
+                mExoPlayer.previous();
+            } else {
+                mExoPlayer.seekTo(0);
+                updateNotificationAndDrawableByDelay();
+            }
+        }
+
+        @Override
+        public void onSkipToNext() {
+            mExoPlayer.next();
+        }
+
+        @Override
+        public void onSeekTo(long pos) {
+            Log.d(TAG, "onSeekTo()");
+            if (mExoPlayer == null) {
+                Intent myIntent = new Intent(getApplicationContext(), MainService.class);
+                myIntent.putExtra(POSITION, pos);
+                startMainService(getApplicationContext(), myIntent);
+            } else {
+                mExoPlayer.seekTo(pos);
+                updateNotificationAndDrawableByDelay();
+            }
+        }
+    }
+
+    private void playAndUpdateNotificationAndDrawable() {
+        Log.d(TAG, "playAndUpdateNotificationAndDrawable()");
+        mExoPlayer.setPlayWhenReady(true);
         updateNotificationAndDrawable();
     }
 
@@ -364,45 +410,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         sendBroadcast(intent);
     }
 
-    /**
-     * Media Session Callbacks, where all external clients control the player.
-     */
-    private class MySessionCallback extends MediaSessionCompat.Callback {
-        @Override
-        public void onPlay() {
-            mExoPlayer.setPlayWhenReady(true);
-        }
-
-        @Override
-        public void onPause() {
-            mExoPlayer.setPlayWhenReady(false);
-        }
-
-        @Override
-        public void onSkipToPrevious() {
-            if (mExoPlayer.getCurrentPosition() <= MAX_POSITION_FOR_SEEK_TO_PREVIOUS) {
-                mExoPlayer.previous();
-            } else {
-                mExoPlayer.seekTo(0);
+    private void updateNotificationAndDrawableByDelay() {
+        Log.d(TAG, "updateNotificationAndDrawableByDelay()");
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateNotificationAndDrawable();
             }
-        }
-
-        @Override
-        public void onSkipToNext() {
-            mExoPlayer.next();
-        }
-
-        @Override
-        public void onSeekTo(long pos) {
-            Log.d(TAG, "onSeekTo()");
-            if (mExoPlayer == null) {
-                Intent myIntent = new Intent(getApplicationContext(), MainService.class);
-                myIntent.putExtra(POSITION, pos);
-                startMainService(getApplicationContext(), myIntent);
-            } else {
-                mExoPlayer.seekTo(pos);
-            }
-        }
+        }, 500);
     }
 
     /**
@@ -431,13 +446,10 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      */
     public static class MediaReceiver extends BroadcastReceiver {
 
-        public MediaReceiver() {
-        }
-
         @Override
         public void onReceive(Context context, final Intent intent) {
             Log.d(TAG, "MediaReceiver$onReceive()");
-            if (isServiceRunning(MainService.class, context)) {
+            if (isServiceRunning(context, MainService.class)) {
                 MediaButtonReceiver.handleIntent(mMediaSession, intent);
             } else {
                 Intent myIntent = new Intent(context, MainService.class);
