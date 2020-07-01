@@ -441,7 +441,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             } else {
                 Intent myIntent = new Intent(context, MainService.class);
                 myIntent.putExtra(Intent.EXTRA_INTENT, intent);
-                context.startService(myIntent);
+                startMainService(context, myIntent);
             }
         }
     }
