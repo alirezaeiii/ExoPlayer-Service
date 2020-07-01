@@ -27,6 +27,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
 
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -328,7 +329,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     public void onPositionDiscontinuity(int reason) {
         Log.d(TAG, "onPositionDiscontinuity()");
         if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION ||
-                reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+                reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT ||
+                reason == Player.DISCONTINUITY_REASON_SEEK) {
             mExoPlayer.setPlayWhenReady(true);
             updateNotificationAndDrawable();
         }
@@ -397,7 +399,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 Intent myIntent = new Intent(getApplicationContext(), MainService.class);
                 myIntent.putExtra(POSITION, pos);
                 startMainService(getApplicationContext(), myIntent);
-
             } else {
                 mExoPlayer.seekTo(pos);
             }
