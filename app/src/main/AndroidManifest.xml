@@ -22,7 +22,7 @@
 
         <service
             android:name=".MainService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <receiver android:name=".MainService$MediaReceiver">
             <intent-filter>
@@ -32,7 +32,11 @@
 
         <receiver
             android:name=".MainService$StopServiceBroadcastReceiver"
-            android:exported="false"></receiver>
+            android:exported="false" />
+
+        <receiver
+            android:name=".MainService$RestartServiceBroadcastReceiver"
+            android:exported="false" />
 
     </application>
 

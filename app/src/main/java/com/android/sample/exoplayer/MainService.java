@@ -271,6 +271,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         super.onTaskRemoved(rootIntent);
         if (!mExoPlayer.getPlayWhenReady()) {
             mNotificationManager.cancel(NOTIFICATION_ID);
+            MainStorage.getInstance(this).setRestartService(false);
             stopSelf();
         }
     }
@@ -299,6 +300,12 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         unregisterReceiver(mBroadcastReceiver);
         mHandler.removeCallbacksAndMessages(null);
         mMediaSession.setActive(false);
+        if(MainStorage.getInstance(this).shouldRestartService()) {
+            Intent intent = new Intent(this, RestartServiceBroadcastReceiver.class);
+            sendBroadcast(intent);
+        } else {
+            MainStorage.getInstance(this).setRestartService(true);
+        }
     }
 
     // ExoPlayer Event Listeners
@@ -464,8 +471,19 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "StopServiceBroadcastReceiver$onReceive()");
+            MainStorage.getInstance(context).setRestartService(false);
             Intent stopIntent = new Intent(context, MainService.class);
             context.stopService(stopIntent);
+        }
+    }
+
+    public static class RestartServiceBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "RestartServiceBroadcastReceiver$onReceive()");
+            Intent startIntent = new Intent(context, MainService.class);
+            startMainService(context, startIntent);
         }
     }
 }

@@ -9,6 +9,8 @@ class MainStorage {
 
     private static final String MY_PREFERENCES = "MyPrefs";
     private static final String CURRENT_POSITION = "position";
+    private static final String RESTART_SERVICE = "restart_service";
+    private static final boolean DEFAULT_RESTART_SERVICE = true;
     private static MainStorage sInstance;
     private SharedPreferences mSharedPref;
 
@@ -34,5 +36,15 @@ class MainStorage {
     public MainPosition getPosition() {
         String json = mSharedPref.getString(CURRENT_POSITION, null);
         return new Gson().fromJson(json, MainPosition.class);
+    }
+
+    public void setRestartService(boolean restartService) {
+        SharedPreferences.Editor editor = mSharedPref.edit();
+        editor.putBoolean(RESTART_SERVICE, restartService);
+        editor.apply();
+    }
+
+    public boolean shouldRestartService() {
+        return mSharedPref.getBoolean(RESTART_SERVICE, DEFAULT_RESTART_SERVICE);
     }
 }
