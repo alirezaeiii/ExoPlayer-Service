@@ -99,6 +99,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         } else if (intent.hasExtra(POSITION)) {
             long position = intent.getLongExtra(POSITION, 0);
             mExoPlayer.seekTo(position);
+            updateNotificationAndDrawableByDelay();
         }
         return super.onStartCommand(intent, flags, startId);
     }
