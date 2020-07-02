@@ -99,7 +99,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         } else if (intent.hasExtra(POSITION)) {
             long position = intent.getLongExtra(POSITION, 0);
             mExoPlayer.seekTo(position);
-            updateNotificationAndDrawableByDelay();
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -326,10 +325,12 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
-            playAndUpdateNotificationAndDrawable();
+            updateNotificationAndDrawable();
         } else if (playbackState == ExoPlayer.STATE_READY) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
+        } else if (playbackState == ExoPlayer.STATE_BUFFERING) {
+            updateNotificationAndDrawableByDelay();
         }
     }
 
@@ -338,7 +339,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         Log.d(TAG, "onPositionDiscontinuity()");
         if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION ||
                 reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
-            playAndUpdateNotificationAndDrawable();
+            mExoPlayer.setPlayWhenReady(true);
+            updateNotificationAndDrawable();
         }
     }
 
@@ -368,7 +370,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 mExoPlayer.previous();
             } else {
                 mExoPlayer.seekTo(0);
-                updateNotificationAndDrawableByDelay();
             }
         }
 
@@ -386,15 +387,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 startMainService(getApplicationContext(), myIntent);
             } else {
                 mExoPlayer.seekTo(pos);
-                updateNotificationAndDrawableByDelay();
             }
         }
-    }
-
-    private void playAndUpdateNotificationAndDrawable() {
-        Log.d(TAG, "playAndUpdateNotificationAndDrawable()");
-        mExoPlayer.setPlayWhenReady(true);
-        updateNotificationAndDrawable();
     }
 
     private void updateNotificationAndDrawable() {
@@ -426,7 +420,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             public void run() {
                 updateNotificationAndDrawable();
             }
-        }, ONE_SECOND / 2);
+        }, ONE_SECOND / 3);
     }
 
     /**
