@@ -9,6 +9,7 @@ import android.util.Log;
 class MainUtil {
 
     private static final String TAG = MainUtil.class.getSimpleName();
+    public static final long ONE_SECOND = 1000;
 
     public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);

@@ -37,6 +37,7 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.android.sample.exoplayer.MainUtil.ONE_SECOND;
 import static com.android.sample.exoplayer.MainUtil.isServiceRunning;
 import static com.android.sample.exoplayer.MainUtil.startMainService;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
@@ -48,7 +49,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     private static final String POSITION = "position";
-    private static final long ONE_SECOND = 1000;
     static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
     static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
     static final String SAMPLE = "sample";

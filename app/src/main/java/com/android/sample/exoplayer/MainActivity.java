@@ -31,11 +31,11 @@ import static com.android.sample.exoplayer.MainService.IS_PLAYING;
 import static com.android.sample.exoplayer.MainService.SAMPLE;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_SERVICE;
+import static com.android.sample.exoplayer.MainUtil.ONE_SECOND;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int ONE_SECOND = 1000;
     private PlayerView mPlayerView;
     private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;
     private ImageButton mBtnPlayPause;
