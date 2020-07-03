@@ -49,16 +49,16 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     private static final String POSITION = "position";
-    static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
-    static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
-    static final String SAMPLE = "sample";
-    static final String IS_PLAYING = "isPlaying";
-    private SimpleExoPlayer mExoPlayer;
+    public static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
+    public static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
+    public static final String SAMPLE = "sample";
+    public static final String IS_PLAYING = "isPlaying";
     private static MediaSessionCompat mMediaSession;
+    private SimpleExoPlayer mExoPlayer;
     private PlaybackStateCompat.Builder mStateBuilder;
     private MediaMetadataCompat.Builder mMetadataBuilder;
-    private List<Sample> mSamples = new ArrayList<>();
     private NotificationManager mNotificationManager;
+    private List<Sample> mSamples = new ArrayList<>();
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -248,7 +248,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
         } else if (playbackState == ExoPlayer.STATE_BUFFERING) {
-            updateNotificationAndDrawableByDelay();
+            updateNotificationByDelay();
         }
     }
 
@@ -333,8 +333,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         sendBroadcast(intent);
     }
 
-    private void updateNotificationAndDrawableByDelay() {
-        Log.d(TAG, "updateNotificationAndDrawableByDelay()");
+    private void updateNotificationByDelay() {
+        Log.d(TAG, "updateNotificationByDelay()");
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
