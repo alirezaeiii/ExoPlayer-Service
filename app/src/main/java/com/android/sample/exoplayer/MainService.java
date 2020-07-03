@@ -144,89 +144,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     }
 
     /**
-     * Shows Media Style notification, with an action that depends on the current MediaSession
-     * PlaybackState.
-     *
-     * @param state  The PlaybackState of the MediaSession.
-     * @param sample The Sample object to display title and composer on Notification.
-     */
-    private void showNotification(PlaybackStateCompat state, Sample sample) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.notification_channel_id));
-
-        int icon;
-        String play_pause;
-        if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            icon = R.drawable.exo_controls_pause;
-            play_pause = getString(R.string.pause);
-        } else {
-            icon = R.drawable.exo_controls_play;
-            play_pause = getString(R.string.play);
-        }
-
-        NotificationCompat.Action playPauseAction = new NotificationCompat.Action(
-                icon, play_pause,
-                MediaButtonReceiver.buildMediaButtonPendingIntent(this,
-                        PlaybackStateCompat.ACTION_PLAY_PAUSE));
-
-        NotificationCompat.Action restartAction = new NotificationCompat
-                .Action(R.drawable.exo_controls_previous, getString(R.string.restart),
-                MediaButtonReceiver.buildMediaButtonPendingIntent
-                        (this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS));
-
-        NotificationCompat.Action nextAction = new NotificationCompat
-                .Action(R.drawable.exo_controls_next, getString(R.string.next),
-                MediaButtonReceiver.buildMediaButtonPendingIntent
-                        (this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT));
-
-        PendingIntent contentPendingIntent = PendingIntent.getActivity
-                (this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent intent = new Intent(this, StopServiceBroadcastReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 0, intent, 0);
-
-        Bitmap largeImage = ((BitmapDrawable) Sample.getComposerArtBySampleID(
-                this,
-                sample.getSampleID())).getBitmap();
-
-        builder.setContentTitle(sample.getTitle())
-                .setContentText(sample.getComposer())
-                .setContentIntent(contentPendingIntent)
-                .setDeleteIntent(pendingIntent)
-                .setSmallIcon(R.drawable.ic_music_note)
-                .setLargeIcon(largeImage)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .addAction(restartAction)
-                .addAction(playPauseAction)
-                .addAction(nextAction).setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                .setMediaSession(mMediaSession.getSessionToken())
-                .setShowActionsInCompactView(1, 2));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String channelId = getString(R.string.notification_channel_id);
-            NotificationChannel channel = new NotificationChannel(
-                    channelId,
-                    getString(R.string.notification_channel_name),
-                    NotificationManager.IMPORTANCE_LOW);
-            channel.setShowBadge(false);
-            mNotificationManager.createNotificationChannel(channel);
-            builder.setChannelId(channelId);
-        }
-
-        Notification notificationCompat = builder.build();
-        if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                stopForeground(STOP_FOREGROUND_DETACH);
-            } else {
-                stopForeground(false);
-            }
-            mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
-        } else {
-            startForeground(NOTIFICATION_ID, notificationCompat);
-        }
-    }
-
-    /**
      * Initialize ExoPlayer.
      */
     private void initializePlayer() {
@@ -325,7 +242,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
-            updateNotificationAndDrawable();
+            Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+            updateNotification(sample);
         } else if (playbackState == ExoPlayer.STATE_READY) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
@@ -340,14 +258,17 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION ||
                 reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
             mExoPlayer.setPlayWhenReady(true);
-            updateNotificationAndDrawable();
+            Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+            updateNotification(sample);
+            updateDrawable(sample);
         }
     }
 
     @Override
     public void onIsPlayingChanged(boolean isPlaying) {
         Log.d(TAG, "onIsPlayingChanged()");
-        updateNotificationAndDrawable();
+        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+        updateNotification(sample);
     }
 
     /**
@@ -391,7 +312,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         }
     }
 
-    private void updateNotificationAndDrawable() {
+    private void updateNotification(Sample sample) {
         Log.d(TAG, "updateNotificationAndDrawable()");
         mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
         mHandler.postDelayed(new Runnable() {
@@ -401,12 +322,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             }
         }, ONE_SECOND / 20);
         mMediaSession.setPlaybackState(mStateBuilder.build());
-        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         showNotification(mStateBuilder.build(), sample);
-        updateDrawable(sample);
     }
 
     private void updateDrawable(Sample sample) {
+        Log.d(TAG, "updateDrawable()");
         Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
         intent.putExtra(SAMPLE, sample);
         intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
@@ -418,9 +338,93 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                updateNotificationAndDrawable();
+                Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+                updateNotification(sample);
             }
         }, ONE_SECOND / 3);
+    }
+
+    /**
+     * Shows Media Style notification, with an action that depends on the current MediaSession
+     * PlaybackState.
+     *
+     * @param state  The PlaybackState of the MediaSession.
+     * @param sample The Sample object to display title and composer on Notification.
+     */
+    private void showNotification(PlaybackStateCompat state, Sample sample) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.notification_channel_id));
+
+        int icon;
+        String play_pause;
+        if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            icon = R.drawable.exo_controls_pause;
+            play_pause = getString(R.string.pause);
+        } else {
+            icon = R.drawable.exo_controls_play;
+            play_pause = getString(R.string.play);
+        }
+
+        NotificationCompat.Action playPauseAction = new NotificationCompat.Action(
+                icon, play_pause,
+                MediaButtonReceiver.buildMediaButtonPendingIntent(this,
+                        PlaybackStateCompat.ACTION_PLAY_PAUSE));
+
+        NotificationCompat.Action restartAction = new NotificationCompat
+                .Action(R.drawable.exo_controls_previous, getString(R.string.restart),
+                MediaButtonReceiver.buildMediaButtonPendingIntent
+                        (this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS));
+
+        NotificationCompat.Action nextAction = new NotificationCompat
+                .Action(R.drawable.exo_controls_next, getString(R.string.next),
+                MediaButtonReceiver.buildMediaButtonPendingIntent
+                        (this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT));
+
+        PendingIntent contentPendingIntent = PendingIntent.getActivity
+                (this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent intent = new Intent(this, StopServiceBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 0, intent, 0);
+
+        Bitmap largeImage = ((BitmapDrawable) Sample.getComposerArtBySampleID(
+                this,
+                sample.getSampleID())).getBitmap();
+
+        builder.setContentTitle(sample.getTitle())
+                .setContentText(sample.getComposer())
+                .setContentIntent(contentPendingIntent)
+                .setDeleteIntent(pendingIntent)
+                .setSmallIcon(R.drawable.ic_music_note)
+                .setLargeIcon(largeImage)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .addAction(restartAction)
+                .addAction(playPauseAction)
+                .addAction(nextAction).setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                .setMediaSession(mMediaSession.getSessionToken())
+                .setShowActionsInCompactView(1, 2));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId = getString(R.string.notification_channel_id);
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    getString(R.string.notification_channel_name),
+                    NotificationManager.IMPORTANCE_LOW);
+            channel.setShowBadge(false);
+            mNotificationManager.createNotificationChannel(channel);
+            builder.setChannelId(channelId);
+        }
+
+        Notification notificationCompat = builder.build();
+        if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                stopForeground(STOP_FOREGROUND_DETACH);
+            } else {
+                stopForeground(false);
+            }
+            mNotificationManager.notify(NOTIFICATION_ID, notificationCompat);
+        } else {
+            startForeground(NOTIFICATION_ID, notificationCompat);
+        }
     }
 
     /**
