@@ -341,7 +341,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
                 updateNotification(sample);
             }
-        }, ONE_SECOND / 3);
+        }, ONE_SECOND / 20);
     }
 
     /**
