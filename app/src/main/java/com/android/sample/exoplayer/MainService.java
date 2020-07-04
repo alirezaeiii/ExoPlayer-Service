@@ -320,7 +320,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             public void run() {
                 mMediaSession.setMetadata(mMetadataBuilder.build());
             }
-        }, ONE_SECOND / 10);
+        }, ONE_SECOND >> 3);
         mMediaSession.setPlaybackState(mStateBuilder.build());
         showNotification(mStateBuilder.build(), sample);
     }
@@ -341,7 +341,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
                 updateNotification(sample);
             }
-        }, ONE_SECOND / 10);
+        }, ONE_SECOND >> 3);
     }
 
     /**
