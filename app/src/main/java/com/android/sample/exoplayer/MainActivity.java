@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                         if (shouldAnimate) {
                             ProgressBarAnimation anim = new ProgressBarAnimation(mProgressBar,
                                     mProgressBar.getProgress(), myService.getExoPlayerInstance().getCurrentPosition());
-                            anim.setDuration(ONE_SECOND / 2);
+                            anim.setDuration(ONE_SECOND >> 1);
                             mProgressBar.startAnimation(anim);
                             shouldAnimate = false;
                         } else {
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
                     }
-                }, ONE_SECOND / 2);
+                }, ONE_SECOND >> 1);
             }
         }
 
