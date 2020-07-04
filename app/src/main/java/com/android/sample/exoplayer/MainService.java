@@ -313,14 +313,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     }
 
     private void updateNotification(Sample sample) {
-        Log.d(TAG, "updateNotificationAndDrawable()");
+        Log.d(TAG, "updateNotification()");
         mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mMediaSession.setMetadata(mMetadataBuilder.build());
             }
-        }, ONE_SECOND / 20);
+        }, ONE_SECOND / 10);
         mMediaSession.setPlaybackState(mStateBuilder.build());
         showNotification(mStateBuilder.build(), sample);
     }
@@ -341,7 +341,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
                 updateNotification(sample);
             }
-        }, ONE_SECOND / 20);
+        }, ONE_SECOND / 10);
     }
 
     /**
