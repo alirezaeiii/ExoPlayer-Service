@@ -46,6 +46,7 @@ import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJ
 public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
+    private static final long DELAY = ONE_SECOND >> 3;
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     private static final String POSITION = "position";
@@ -320,7 +321,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             public void run() {
                 mMediaSession.setMetadata(mMetadataBuilder.build());
             }
-        }, ONE_SECOND >> 3);
+        }, DELAY);
         mMediaSession.setPlaybackState(mStateBuilder.build());
         showNotification(mStateBuilder.build(), sample);
     }
@@ -341,7 +342,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
                 updateNotification(sample);
             }
-        }, ONE_SECOND >> 3);
+        }, DELAY);
     }
 
     /**

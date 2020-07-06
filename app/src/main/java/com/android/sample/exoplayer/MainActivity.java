@@ -36,6 +36,7 @@ import static com.android.sample.exoplayer.MainUtil.ONE_SECOND;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final long DELAY = ONE_SECOND >> 1;
     private PlayerView mPlayerView;
     private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;
     private ImageButton mBtnPlayPause;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                         if (shouldAnimate) {
                             ProgressBarAnimation anim = new ProgressBarAnimation(mProgressBar,
                                     mProgressBar.getProgress(), myService.getExoPlayerInstance().getCurrentPosition());
-                            anim.setDuration(ONE_SECOND >> 1);
+                            anim.setDuration(DELAY);
                             mProgressBar.startAnimation(anim);
                             shouldAnimate = false;
                         } else {
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
                     }
-                }, ONE_SECOND >> 1);
+                }, DELAY);
             }
         }
 
