@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
-                        if (shouldAnimate) {
+                        if (shouldAnimate && mProgressBar.getProgress() < myService.getExoPlayerInstance().getCurrentPosition()) {
                             ProgressBarAnimation anim = new ProgressBarAnimation(mProgressBar,
                                     mProgressBar.getProgress(), myService.getExoPlayerInstance().getCurrentPosition());
                             anim.setDuration(DELAY);
