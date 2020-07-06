@@ -94,14 +94,17 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Sample sample = intent.getParcelableExtra(SAMPLE);
-            isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
-            updateBtnPlayPauseDrawable();
-            mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(
-                    MainActivity.this,
-                    Objects.requireNonNull(sample).getSampleID()));
-            mTxtSong.setText(sample.getTitle());
-            mTxtComposer.setText(sample.getComposer());
+            if (intent.hasExtra(IS_PLAYING)) {
+                isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
+                updateBtnPlayPauseDrawable();
+            } else if (intent.hasExtra(SAMPLE)) {
+                Sample sample = intent.getParcelableExtra(SAMPLE);
+                mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(
+                        MainActivity.this,
+                        Objects.requireNonNull(sample).getSampleID()));
+                mTxtSong.setText(sample.getTitle());
+                mTxtComposer.setText(sample.getComposer());
+            }
         }
     };
 

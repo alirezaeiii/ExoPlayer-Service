@@ -261,7 +261,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             mExoPlayer.setPlayWhenReady(true);
             Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
             updateNotification(sample);
-            updateDrawable(sample);
+            Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
+            intent.putExtra(SAMPLE, sample);
+            sendBroadcast(intent);
         }
     }
 
@@ -270,6 +272,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         Log.d(TAG, "onIsPlayingChanged()");
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         updateNotification(sample);
+        Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
+        intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
+        sendBroadcast(intent);
     }
 
     /**
@@ -324,14 +329,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         }, DELAY);
         mMediaSession.setPlaybackState(mStateBuilder.build());
         showNotification(mStateBuilder.build(), sample);
-    }
-
-    private void updateDrawable(Sample sample) {
-        Log.d(TAG, "updateDrawable()");
-        Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
-        intent.putExtra(SAMPLE, sample);
-        intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
-        sendBroadcast(intent);
     }
 
     private void updateNotificationByDelay() {
