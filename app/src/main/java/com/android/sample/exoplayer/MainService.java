@@ -333,7 +333,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                     mMediaSession.setMetadata(mMetadataBuilder.build());
                 } else {
                     Log.d(TAG, "setMetaData delayed");
-                    mHandler.postDelayed(this, DELAY << 4);
+                    mHandler.postDelayed(this, DELAY >> 4);
                 }
             }
         });
