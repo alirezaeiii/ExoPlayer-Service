@@ -242,11 +242,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
-            Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-            updateNotification(sample);
+            updateNotification();
         } else if (playbackState == ExoPlayer.STATE_READY) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
+            updateNotification();
         }
     }
 
@@ -273,8 +273,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     @Override
     public void onIsPlayingChanged(boolean isPlaying) {
         Log.d(TAG, "onIsPlayingChanged()");
-        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-        updateNotification(sample);
+        updateNotification();
         Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
         intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
         sendBroadcast(intent);
@@ -321,7 +320,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         }
     }
 
-    private void updateNotification(Sample sample) {
+    private void updateNotification() {
         Log.d(TAG, "updateNotification()");
         mHandler.post(new Runnable() {
             @Override
@@ -337,15 +336,15 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         });
         PlaybackStateCompat playbackStateCompat = mStateBuilder.build();
         mMediaSession.setPlaybackState(playbackStateCompat);
+        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         showNotification(playbackStateCompat, sample);
     }
 
     private void onPositionDiscontinuity() {
         mExoPlayer.setPlayWhenReady(true);
-        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-        updateNotification(sample);
+        updateNotification();
         Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
-        intent.putExtra(SAMPLE, sample);
+        intent.putExtra(SAMPLE, mSamples.get(mExoPlayer.getCurrentWindowIndex()));
         sendBroadcast(intent);
     }
 
