@@ -255,8 +255,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     @Override
     public void onPositionDiscontinuity(int reason) {
         Log.d(TAG, "onPositionDiscontinuity()");
-        if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION ||
-                reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+        if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION) {
             mStateBuilder = new PlaybackStateCompat.Builder()
                     .setState(PlaybackStateCompat.STATE_PLAYING, mExoPlayer.getCurrentWindowIndex(), 1f)
                     .setBufferedPosition(mExoPlayer.getDuration())
@@ -267,12 +266,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                                     PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
                                     PlaybackStateCompat.ACTION_PLAY_PAUSE |
                                     PlaybackStateCompat.ACTION_SEEK_TO);
-            mExoPlayer.setPlayWhenReady(true);
-            Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-            updateNotification(sample);
-            Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
-            intent.putExtra(SAMPLE, sample);
-            sendBroadcast(intent);
+            onPositionDiscontinuity();
+        } else if (reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+            onPositionDiscontinuity();
         }
     }
 
@@ -350,6 +346,15 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 updateNotification(sample);
             }
         }, DELAY);
+    }
+
+    private void onPositionDiscontinuity() {
+        mExoPlayer.setPlayWhenReady(true);
+        Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
+        updateNotification(sample);
+        Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
+        intent.putExtra(SAMPLE, sample);
+        sendBroadcast(intent);
     }
 
     /**
