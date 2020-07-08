@@ -325,13 +325,18 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     private void updateNotification(Sample sample) {
         Log.d(TAG, "updateNotification()");
-        mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
-        mHandler.postDelayed(new Runnable() {
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mMediaSession.setMetadata(mMetadataBuilder.build());
+                if (mExoPlayer.getDuration() > 0) {
+                    mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
+                    mMediaSession.setMetadata(mMetadataBuilder.build());
+                } else {
+                    Log.d(TAG, "Update MetaData delayed...");
+                    mHandler.postDelayed(this, DELAY << 4);
+                }
             }
-        }, DELAY);
+        });
         PlaybackStateCompat playbackStateCompat = mStateBuilder.build();
         mMediaSession.setPlaybackState(playbackStateCompat);
         showNotification(playbackStateCompat, sample);
