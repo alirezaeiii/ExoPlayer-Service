@@ -240,13 +240,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         Log.d(TAG, "onPlayerStateChanged()");
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
-            mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
-                    mExoPlayer.getCurrentPosition(), 1f);
-            updateNotification();
+            onPlayerStateChanged(PlaybackStateCompat.STATE_PLAYING);
         } else if (playbackState == ExoPlayer.STATE_READY) {
-            mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
-                    mExoPlayer.getCurrentPosition(), 1f);
-            updateNotification();
+            onPlayerStateChanged(PlaybackStateCompat.STATE_PAUSED);
         }
     }
 
@@ -318,6 +314,12 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 mExoPlayer.seekTo(pos);
             }
         }
+    }
+
+    private void onPlayerStateChanged(int state) {
+        mStateBuilder.setState(state,
+                mExoPlayer.getCurrentPosition(), 1f);
+        updateNotification();
     }
 
     private void updateNotification() {
