@@ -135,7 +135,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         mMediaSession.setPlaybackState(mStateBuilder.build());
 
         mMetadataBuilder = new MediaMetadataCompat.Builder();
-        mMediaSession.setMetadata(mMetadataBuilder.build());
 
         // MySessionCallback has methods that handle callbacks from a media controller.
         mMediaSession.setCallback(new MySessionCallback());
@@ -258,6 +257,16 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         Log.d(TAG, "onPositionDiscontinuity()");
         if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION ||
                 reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+            mStateBuilder = new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_PLAYING, mExoPlayer.getCurrentWindowIndex(), 1f)
+                    .setBufferedPosition(mExoPlayer.getDuration())
+                    .setActions(
+                            PlaybackStateCompat.ACTION_PLAY |
+                                    PlaybackStateCompat.ACTION_PAUSE |
+                                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                                    PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                                    PlaybackStateCompat.ACTION_SEEK_TO);
             mExoPlayer.setPlayWhenReady(true);
             Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
             updateNotification(sample);
@@ -327,8 +336,9 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 mMediaSession.setMetadata(mMetadataBuilder.build());
             }
         }, DELAY);
-        mMediaSession.setPlaybackState(mStateBuilder.build());
-        showNotification(mStateBuilder.build(), sample);
+        PlaybackStateCompat playbackStateCompat = mStateBuilder.build();
+        mMediaSession.setPlaybackState(playbackStateCompat);
+        showNotification(playbackStateCompat, sample);
     }
 
     private void updateNotificationByDelay() {
