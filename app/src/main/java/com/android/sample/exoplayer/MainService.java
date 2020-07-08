@@ -46,7 +46,7 @@ import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJ
 public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
-    private static final long DELAY = ONE_SECOND >> 3;
+    private static final long DELAY = ONE_SECOND >> 7;
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
     private static final String POSITION = "position";
@@ -247,8 +247,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         } else if (playbackState == ExoPlayer.STATE_READY) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
-        } else if (playbackState == ExoPlayer.STATE_BUFFERING) {
-            updateNotificationByDelay();
         }
     }
 
@@ -333,24 +331,13 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                     mMediaSession.setMetadata(mMetadataBuilder.build());
                 } else {
                     Log.d(TAG, "setMetaData delayed");
-                    mHandler.postDelayed(this, DELAY >> 4);
+                    mHandler.postDelayed(this, DELAY);
                 }
             }
         });
         PlaybackStateCompat playbackStateCompat = mStateBuilder.build();
         mMediaSession.setPlaybackState(playbackStateCompat);
         showNotification(playbackStateCompat, sample);
-    }
-
-    private void updateNotificationByDelay() {
-        Log.d(TAG, "updateNotificationByDelay()");
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
-                updateNotification(sample);
-            }
-        }, DELAY);
     }
 
     private void onPositionDiscontinuity() {
