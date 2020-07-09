@@ -238,7 +238,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      *                      STATE_BUFFERING, or STATE_ENDED.
      */
     @Override
-    public void onPlayerStateChanged(boolean playWhenReady, final int playbackState) {
+    public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
         Log.d(TAG, "onPlayerStateChanged()");
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
@@ -252,9 +252,10 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             @Override
             public void run() {
                 if (playbackState == ExoPlayer.STATE_BUFFERING && !isBuffered) {
+                    Log.d(TAG, "Buffered");
                     isBuffered = true;
                     mHandler.postDelayed(this, DELAY);
-                } else if (playbackState == ExoPlayer.STATE_READY && isBuffered) {
+                } else if (playbackState == ExoPlayer.STATE_READY && !playWhenReady && isBuffered) {
                     updateNotification();
                     isBuffered = false;
                 }
