@@ -239,7 +239,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      */
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, final int playbackState) {
-        Log.d(TAG, "onPlayerStateChanged() " + playbackState);
+        Log.d(TAG, "onPlayerStateChanged()");
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
