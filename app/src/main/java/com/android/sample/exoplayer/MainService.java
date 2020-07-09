@@ -61,6 +61,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private NotificationManager mNotificationManager;
     private List<Sample> mSamples = new ArrayList<>();
     private Handler mHandler = new Handler(Looper.getMainLooper());
+    private boolean isBuffered = false;
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -237,13 +238,28 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      *                      STATE_BUFFERING, or STATE_ENDED.
      */
     @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        Log.d(TAG, "onPlayerStateChanged()");
+    public void onPlayerStateChanged(boolean playWhenReady, final int playbackState) {
+        Log.d(TAG, "onPlayerStateChanged() " + playbackState);
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
-            onPlayerStateChanged(PlaybackStateCompat.STATE_PLAYING);
+            mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
+                    mExoPlayer.getCurrentPosition(), 1f);
+            updateNotification();
         } else if (playbackState == ExoPlayer.STATE_READY) {
-            onPlayerStateChanged(PlaybackStateCompat.STATE_PAUSED);
+            mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
+                    mExoPlayer.getCurrentPosition(), 1f);
         }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (playbackState == ExoPlayer.STATE_BUFFERING && !isBuffered) {
+                    isBuffered = true;
+                    mHandler.postDelayed(this, DELAY);
+                } else if (playbackState == ExoPlayer.STATE_READY && isBuffered) {
+                    updateNotification();
+                    isBuffered = false;
+                }
+            }
+        });
     }
 
     @Override
@@ -314,12 +330,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 mExoPlayer.seekTo(pos);
             }
         }
-    }
-
-    private void onPlayerStateChanged(int state) {
-        mStateBuilder.setState(state,
-                mExoPlayer.getCurrentPosition(), 1f);
-        updateNotification();
     }
 
     private void updateNotification() {
