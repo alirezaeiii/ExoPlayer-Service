@@ -248,19 +248,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
         }
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (playbackState == ExoPlayer.STATE_BUFFERING && !isBuffered) {
-                    Log.d(TAG, "Buffered");
-                    isBuffered = true;
-                    mHandler.postDelayed(this, DELAY);
-                } else if (playbackState == ExoPlayer.STATE_READY && !playWhenReady && isBuffered) {
-                    updateNotification();
-                    isBuffered = false;
-                }
-            }
-        });
+
+        if (playbackState == ExoPlayer.STATE_BUFFERING && !isBuffered) {
+            Log.d(TAG, "Buffered");
+            isBuffered = true;
+        } else if (playbackState == ExoPlayer.STATE_READY && !playWhenReady && isBuffered) {
+            updateNotification();
+            isBuffered = false;
+        }
     }
 
     @Override
