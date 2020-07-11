@@ -48,7 +48,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final String TAG = MainService.class.getSimpleName();
     private static final long DELAY = ONE_SECOND >> 7;
     private static final int NOTIFICATION_ID = 1;
-    private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = 3000;
+    private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = ONE_SECOND * 3;
     private static final String POSITION = "position";
     public static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
     public static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
