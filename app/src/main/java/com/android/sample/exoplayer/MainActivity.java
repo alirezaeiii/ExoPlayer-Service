@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -33,7 +35,7 @@ import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_SERVICE;
 import static com.android.sample.exoplayer.MainUtil.ONE_SECOND;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final long DELAY = ONE_SECOND >> 1;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTxtComposer;
     private ConstraintLayout mBottomBar;
     private ProgressBar mProgressBar;
+    private ImageView mArrow;
     private boolean isPlaying = true;
     private boolean shouldAnimate;
     private Handler mHandler = new Handler(Looper.getMainLooper());
@@ -124,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
         mTxtComposer = findViewById(R.id.txt_composer);
         mBottomBar = findViewById(R.id.bottom_bar);
         mProgressBar = findViewById(R.id.progress);
+        mArrow = findViewById(R.id.arrow);
 
         FrameLayout bottomNavigationContainer = findViewById(R.id.bottom_navigation_container);
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomNavigationContainer);
@@ -137,8 +141,11 @@ public class MainActivity extends AppCompatActivity {
                 float alpha = (float) (1 - (slideOffset * 2.8));
                 mBtnPlayPause.setEnabled(alpha > 0);
                 mBottomBar.setAlpha(alpha);
+                mArrow.setRotation(slideOffset * -180);
             }
         });
+        LinearLayout bottomLayout = findViewById(R.id.bottom_layout);
+        bottomLayout.setOnClickListener(this);
     }
 
     @Override
@@ -181,6 +188,17 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         mHandler.removeCallbacksAndMessages(null);
         unbindService(mConnection);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.bottom_layout) {
+            if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        }
     }
 
     public void playPauseClick(View view) {
