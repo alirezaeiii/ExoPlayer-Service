@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mTxtSong.setText(myService.getSample().getTitle());
                 mTxtComposer.setText(myService.getSample().getComposer());
                 isPlaying = myService.getExoPlayerInstance().getPlayWhenReady();
-                updateBtnPlayPauseDrawable();
+                mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(IS_PLAYING)) {
                 isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
-                updateBtnPlayPauseDrawable();
+                mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
             } else if (intent.hasExtra(SAMPLE)) {
                 Sample sample = intent.getParcelableExtra(SAMPLE);
                 mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(
@@ -203,14 +203,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void playPauseClick(View view) {
         isPlaying = !isPlaying;
-        updateBtnPlayPauseDrawable();
+        mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
         Intent intent = new Intent(STR_RECEIVER_SERVICE);
         intent.putExtra(IS_PLAYING, isPlaying);
         sendBroadcast(intent);
-    }
-
-    private void updateBtnPlayPauseDrawable() {
-        VectorDrawable drawable = isPlaying ? mPauseDrawable : mPlayDrawable;
-        mBtnPlayPause.setImageDrawable(drawable);
     }
 }
