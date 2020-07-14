@@ -21,82 +21,86 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/bottom_layout"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:background="@color/colorPrimary">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/bottom_bar"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="8">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-                <ImageButton
-                    android:id="@+id/btn_play_pause"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/bottom_bar"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:background="@color/colorPrimary"
-                    android:onClick="playPauseClick"
-                    app:layout_constraintBottom_toBottomOf="@+id/guideline"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/guideline"
-                    tools:src="@drawable/exo_controls_pause" />
+                    android:layout_weight="8">
 
-                <TextView
-                    android:id="@+id/txt_song"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="8dp"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/guideline"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/btn_play_pause"
-                    tools:text="My Song" />
+                    <ImageButton
+                        android:id="@+id/btn_play_pause"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorPrimary"
+                        android:onClick="playPauseClick"
+                        app:layout_constraintBottom_toBottomOf="@+id/guideline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/guideline"
+                        tools:src="@drawable/exo_controls_pause" />
 
-                <TextView
-                    android:id="@+id/txt_composer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="8dp"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/btn_play_pause"
-                    app:layout_constraintTop_toBottomOf="@+id/guideline"
-                    tools:text="Composer" />
+                    <TextView
+                        android:id="@+id/txt_song"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@+id/guideline"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/btn_play_pause"
+                        tools:text="My Song" />
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.5" />
+                    <TextView
+                        android:id="@+id/txt_composer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp"
+                        android:textColor="@android:color/white"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/btn_play_pause"
+                        app:layout_constraintTop_toBottomOf="@+id/guideline"
+                        tools:text="Composer" />
 
-                <ProgressBar
-                    android:id="@+id/progress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/progressbar_height"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintGuide_percent="0.5" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ImageView
-                android:id="@+id/arrow"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/ic_arrow_up" />
+                <ImageView
+                    android:id="@+id/arrow"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_arrow_up" />
 
-        </LinearLayout>
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_gravity="top" />
+
+        </FrameLayout>
 
     </FrameLayout>
 

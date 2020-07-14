@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -141,10 +140,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 float alpha = (float) (1 - (slideOffset * 2.8));
                 mBtnPlayPause.setEnabled(alpha > 0);
                 mBottomBar.setAlpha(alpha);
+                mProgressBar.setAlpha(alpha);
                 mArrow.setRotation(slideOffset * -180);
             }
         });
-        LinearLayout bottomLayout = findViewById(R.id.bottom_layout);
+        FrameLayout bottomLayout = findViewById(R.id.bottom_layout);
         bottomLayout.setOnClickListener(this);
     }
 
