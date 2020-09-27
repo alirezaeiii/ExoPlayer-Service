@@ -70,10 +70,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mTxtComposer.setText(myService.getSample().getComposer());
                 isPlaying = myService.getExoPlayerInstance().getPlayWhenReady();
                 mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
-                mHandler.postDelayed(new Runnable() {
+                mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
+                        mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
+                    }
+                });
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
                         if (shouldAnimate && mProgressBar.getProgress() < myService.getExoPlayerInstance().getCurrentPosition()) {
                             ProgressBarAnimation anim = new ProgressBarAnimation(mProgressBar,
                                     mProgressBar.getProgress(), myService.getExoPlayerInstance().getCurrentPosition());
