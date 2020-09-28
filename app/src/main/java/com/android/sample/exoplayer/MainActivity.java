@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
                         if (shouldAnimate && mProgressBar.getProgress() < myService.getExoPlayerInstance().getCurrentPosition()) {
                             ProgressBarAnimation anim = new ProgressBarAnimation(mProgressBar,
                                     mProgressBar.getProgress(), myService.getExoPlayerInstance().getCurrentPosition());
@@ -86,6 +85,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
                     }
                 });
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
+                        mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
+                    }
+                }, DELAY);
             }
         }
 
