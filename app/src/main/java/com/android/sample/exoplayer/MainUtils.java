@@ -11,6 +11,9 @@ class MainUtils {
     private static final String TAG = MainUtils.class.getSimpleName();
     public static final long ONE_SECOND = 1000;
 
+    private MainUtils() {
+    }
+
     public static boolean isServiceRunning(Context context, Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
