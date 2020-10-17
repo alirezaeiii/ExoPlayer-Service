@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-class MainUtil {
+class MainUtils {
 
-    private static final String TAG = MainUtil.class.getSimpleName();
+    private static final String TAG = MainUtils.class.getSimpleName();
     public static final long ONE_SECOND = 1000;
 
     public static boolean isServiceRunning(Context context, Class<?> serviceClass) {

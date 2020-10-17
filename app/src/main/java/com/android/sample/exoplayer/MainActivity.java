@@ -32,12 +32,11 @@ import static com.android.sample.exoplayer.MainService.IS_PLAYING;
 import static com.android.sample.exoplayer.MainService.SAMPLE;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_SERVICE;
-import static com.android.sample.exoplayer.MainUtil.ONE_SECOND;
+import static com.android.sample.exoplayer.MainUtils.ONE_SECOND;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final long DELAY = ONE_SECOND >> 1;
     private PlayerView mPlayerView;
     private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;
     private ImageButton mBtnPlayPause;
@@ -49,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressBar mProgressBar;
     private ImageView mArrow;
     private boolean isPlaying = true;
-    private boolean shouldAnimate;
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
     /**
@@ -73,25 +71,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (shouldAnimate && mProgressBar.getProgress() < myService.getExoPlayerInstance().getCurrentPosition()) {
-                            ProgressBarAnimation anim = new ProgressBarAnimation(mProgressBar,
-                                    mProgressBar.getProgress(), myService.getExoPlayerInstance().getCurrentPosition());
-                            anim.setDuration(DELAY);
-                            mProgressBar.startAnimation(anim);
-                            shouldAnimate = false;
-                        } else {
-                            mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
-                        }
+                        mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
+                        mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
                         mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
                     }
                 });
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
-                        mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
-                    }
-                }, DELAY);
             }
         }
 
@@ -177,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         Log.d(TAG, "onResume()");
         super.onResume();
-        this.shouldAnimate = true;
         registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_ACTIVITY));
     }
 

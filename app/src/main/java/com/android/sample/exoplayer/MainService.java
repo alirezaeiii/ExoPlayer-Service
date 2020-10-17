@@ -37,9 +37,9 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.android.sample.exoplayer.MainUtil.ONE_SECOND;
-import static com.android.sample.exoplayer.MainUtil.isServiceRunning;
-import static com.android.sample.exoplayer.MainUtil.startMainService;
+import static com.android.sample.exoplayer.MainUtils.ONE_SECOND;
+import static com.android.sample.exoplayer.MainUtils.isServiceRunning;
+import static com.android.sample.exoplayer.MainUtils.startMainService;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT;
 
