@@ -37,7 +37,7 @@ import static com.android.sample.exoplayer.MainUtils.ONE_SECOND;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final long DELAY = ONE_SECOND >> 6;
+    private static final long INITIAL_PROGRESS_DELAY = ONE_SECOND >> 3;
     private PlayerView mPlayerView;
     private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;
     private ImageButton mBtnPlayPause;
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
                         mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
                     }
-                }, DELAY);
+                }, INITIAL_PROGRESS_DELAY);
             }
         }
 
