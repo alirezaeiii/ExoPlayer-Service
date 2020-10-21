@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
@@ -37,7 +38,7 @@ import static com.android.sample.exoplayer.MainUtils.ONE_SECOND;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final long INITIAL_PROGRESS_DELAY = ONE_SECOND >> 3;
+    private static final long UPDATE_PROGRESS_DELAY = ONE_SECOND >> 3;
     private PlayerView mPlayerView;
     private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;
     private ImageButton mBtnPlayPause;
@@ -69,14 +70,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mTxtComposer.setText(myService.getSample().getComposer());
                 isPlaying = myService.getExoPlayerInstance().getPlayWhenReady();
                 mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
-                mHandler.postDelayed(new Runnable() {
+                mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        mProgressBar.setMax((int) myService.getExoPlayerInstance().getDuration());
-                        mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
-                        mHandler.postDelayed(this, isPlaying ? 0 : ONE_SECOND);
+                        long duration = myService.getExoPlayerInstance().getDuration();
+                        if (duration != C.TIME_UNSET) {
+                            mProgressBar.setMax((int) duration);
+                            mProgressBar.setProgress((int) myService.getExoPlayerInstance().getCurrentPosition());
+                        }
+                        mHandler.postDelayed(this, isPlaying ? 0 : UPDATE_PROGRESS_DELAY);
                     }
-                }, INITIAL_PROGRESS_DELAY);
+                });
             }
         }
 
