@@ -5,10 +5,10 @@ import android.os.Parcelable;
 
 class MainPosition implements Parcelable {
 
-    private int mCurrentWindowIndex;
-    private long mCurrentPosition;
+    private final int mCurrentWindowIndex;
+    private final long mCurrentPosition;
 
-    MainPosition(int currentWindowIndex, long currentPosition) {
+    public MainPosition(int currentWindowIndex, long currentPosition) {
         mCurrentWindowIndex = currentWindowIndex;
         mCurrentPosition = currentPosition;
     }

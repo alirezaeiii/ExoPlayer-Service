@@ -54,16 +54,16 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     public static final String STR_RECEIVER_SERVICE = "com.MainService.receiver.service";
     public static final String SAMPLE = "sample";
     public static final String IS_PLAYING = "isPlaying";
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private static MediaSessionCompat mMediaSession;
     private SimpleExoPlayer mExoPlayer;
     private PlaybackStateCompat.Builder mStateBuilder;
     private MediaMetadataCompat.Builder mMetadataBuilder;
     private NotificationManager mNotificationManager;
-    private List<Sample> mSamples = new ArrayList<>();
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final List<Sample> mSamples = new ArrayList<>();
     private boolean isBuffered = false;
 
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean isPlaying = intent.getBooleanExtra(IS_PLAYING, false);

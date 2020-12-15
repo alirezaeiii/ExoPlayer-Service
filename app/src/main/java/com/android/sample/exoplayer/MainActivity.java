@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final long UPDATE_PROGRESS_DELAY = ONE_SECOND >> 3;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private PlayerView mPlayerView;
     private BottomSheetBehavior<FrameLayout> mBottomSheetBehavior;
     private ImageButton mBtnPlayPause;
@@ -50,12 +51,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressBar mProgressBar;
     private ImageView mArrow;
     private boolean isPlaying = true;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     /**
      * Create our connection to the service to be used in our bindService call.
      */
-    private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             //We expect the service binder to be the main services binder.
             //As such we cast.
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(IS_PLAYING)) {
