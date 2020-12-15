@@ -12,7 +12,7 @@ class MainStorage {
     private static final String RESTART_SERVICE = "restart_service";
     private static final boolean DEFAULT_RESTART_SERVICE = true;
     private static MainStorage sInstance;
-    private SharedPreferences mSharedPref;
+    private final SharedPreferences mSharedPref;
 
     private MainStorage(Context context) {
         mSharedPref = context.getSharedPreferences(MY_PREFERENCES, Context.MODE_PRIVATE);
