@@ -42,6 +42,9 @@ import io.reactivex.functions.Consumer;
 import static com.android.sample.exoplayer.AppUtils.ONE_SECOND;
 import static com.android.sample.exoplayer.AppUtils.isServiceRunning;
 import static com.android.sample.exoplayer.AppUtils.startMainService;
+import static com.android.sample.exoplayer.MainActivity.mPlayingSubject;
+import static com.android.sample.exoplayer.MainActivity.mSampleSubject;
+import static com.android.sample.exoplayer.RxSubject.unsubscribe;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT;
 
@@ -52,9 +55,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = ONE_SECOND * 3;
     private static final String POSITION = "position";
-    public static final String STR_RECEIVER_ACTIVITY = "com.MainService.receiver.activity";
-    public static final String SAMPLE = "sample";
-    public static final String IS_PLAYING = "isPlaying";
+    static RxSubject<Boolean> mExoPlayerPlayingSubject = new RxSubject<>();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private static MediaSessionCompat mMediaSession;
     private SimpleExoPlayer mExoPlayer;
@@ -64,7 +65,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private final List<Sample> mSamples = new ArrayList<>();
     private boolean isBuffered = false;
 
-    private final Disposable mPlayingDisposable = RxBus.subscribe(new Consumer<Boolean>() {
+    private final Disposable mPlayingDisposable = mExoPlayerPlayingSubject.subscribe(new Consumer<Boolean>() {
         @Override
         public void accept(Boolean isPlaying) {
             mExoPlayer.setPlayWhenReady(isPlaying);
@@ -214,7 +215,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                 mExoPlayer.getCurrentPosition());
         MainStorage.getInstance(this).storePosition(mainPosition);
         releasePlayer();
-        mPlayingDisposable.dispose();
+        unsubscribe(mPlayingDisposable);
         mHandler.removeCallbacksAndMessages(null);
         mMediaSession.setActive(false);
         if (MainStorage.getInstance(this).shouldRestartService()) {
@@ -280,9 +281,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     public void onIsPlayingChanged(boolean isPlaying) {
         Log.d(TAG, "onIsPlayingChanged()");
         updateNotification();
-        Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
-        intent.putExtra(IS_PLAYING, mExoPlayer.getPlayWhenReady());
-        sendBroadcast(intent);
+        mPlayingSubject.publish(mExoPlayer.getPlayWhenReady());
     }
 
     /**
@@ -349,9 +348,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private void onPositionDiscontinuity() {
         mExoPlayer.setPlayWhenReady(true);
         updateNotification();
-        Intent intent = new Intent(STR_RECEIVER_ACTIVITY);
-        intent.putExtra(SAMPLE, mSamples.get(mExoPlayer.getCurrentWindowIndex()));
-        sendBroadcast(intent);
+        mSampleSubject.publish(mSamples.get(mExoPlayer.getCurrentWindowIndex()));
     }
 
     /**

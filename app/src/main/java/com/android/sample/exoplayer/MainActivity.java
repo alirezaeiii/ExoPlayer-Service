@@ -1,10 +1,8 @@
 package com.android.sample.exoplayer;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
@@ -29,10 +27,12 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.Objects;
 
-import static com.android.sample.exoplayer.MainService.IS_PLAYING;
-import static com.android.sample.exoplayer.MainService.SAMPLE;
-import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+
 import static com.android.sample.exoplayer.AppUtils.ONE_SECOND;
+import static com.android.sample.exoplayer.MainService.mExoPlayerPlayingSubject;
+import static com.android.sample.exoplayer.RxSubject.unsubscribe;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressBar mProgressBar;
     private ImageView mArrow;
     private boolean isPlaying = true;
+    static RxSubject<Boolean> mPlayingSubject = new RxSubject<>();
+    static RxSubject<Sample> mSampleSubject = new RxSubject<>();
 
     /**
      * Create our connection to the service to be used in our bindService call.
@@ -87,22 +89,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+    private final Disposable mPlayingDisposable = mPlayingSubject.subscribe(new Consumer<Boolean>() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra(IS_PLAYING)) {
-                isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
-                mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
-            } else if (intent.hasExtra(SAMPLE)) {
-                Sample sample = intent.getParcelableExtra(SAMPLE);
-                mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(
-                        MainActivity.this,
-                        Objects.requireNonNull(sample).getSampleID()));
-                mTxtSong.setText(sample.getTitle());
-                mTxtComposer.setText(sample.getComposer());
-            }
+        public void accept(Boolean isPlaying) {
+            MainActivity.this.isPlaying = isPlaying;
+            mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
         }
-    };
+    });
+
+    private final Disposable mSampleDisposable = mSampleSubject.subscribe(new Consumer<Sample>() {
+        @Override
+        public void accept(Sample sample) {
+            mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(
+                    MainActivity.this,
+                    Objects.requireNonNull(sample).getSampleID()));
+            mTxtSong.setText(sample.getTitle());
+            mTxtComposer.setText(sample.getComposer());
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,24 +159,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         Log.d(TAG, "onStart()");
         super.onStart();
-        //Start the service up with video playback information.
         Intent intent = new Intent(this, MainService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         startService(intent);
-    }
-
-    @Override
-    protected void onResume() {
-        Log.d(TAG, "onResume()");
-        super.onResume();
-        registerReceiver(mBroadcastReceiver, new IntentFilter(STR_RECEIVER_ACTIVITY));
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d(TAG, "onPause()");
-        super.onPause();
-        unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
@@ -181,6 +170,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onStop();
         mHandler.removeCallbacksAndMessages(null);
         unbindService(mConnection);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy()");
+        super.onDestroy();
+        unsubscribe(mPlayingDisposable, mSampleDisposable);
     }
 
     @Override
@@ -197,6 +193,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void playPauseClick(View view) {
         isPlaying = !isPlaying;
         mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
-        RxBus.publish(isPlaying);
+        mExoPlayerPlayingSubject.publish(isPlaying);
     }
 }
