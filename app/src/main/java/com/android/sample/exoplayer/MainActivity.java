@@ -32,8 +32,7 @@ import java.util.Objects;
 import static com.android.sample.exoplayer.MainService.IS_PLAYING;
 import static com.android.sample.exoplayer.MainService.SAMPLE;
 import static com.android.sample.exoplayer.MainService.STR_RECEIVER_ACTIVITY;
-import static com.android.sample.exoplayer.MainService.STR_RECEIVER_SERVICE;
-import static com.android.sample.exoplayer.MainUtils.ONE_SECOND;
+import static com.android.sample.exoplayer.AppUtils.ONE_SECOND;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -198,8 +197,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void playPauseClick(View view) {
         isPlaying = !isPlaying;
         mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
-        Intent intent = new Intent(STR_RECEIVER_SERVICE);
-        intent.putExtra(IS_PLAYING, isPlaying);
-        sendBroadcast(intent);
+        RxBus.publish(isPlaying);
     }
 }
