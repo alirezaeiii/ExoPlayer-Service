@@ -6,12 +6,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-class AppUtils {
+class ServiceUtils {
 
-    private static final String TAG = AppUtils.class.getSimpleName();
+    private static final String TAG = ServiceUtils.class.getSimpleName();
     public static final long ONE_SECOND = 1000;
 
-    private AppUtils() {
+    private ServiceUtils() {
     }
 
     public static boolean isServiceRunning(Context context, Class<?> serviceClass) {

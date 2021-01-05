@@ -39,12 +39,12 @@ import java.util.List;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-import static com.android.sample.exoplayer.AppUtils.ONE_SECOND;
-import static com.android.sample.exoplayer.AppUtils.isServiceRunning;
-import static com.android.sample.exoplayer.AppUtils.startMainService;
+import static com.android.sample.exoplayer.ServiceUtils.ONE_SECOND;
+import static com.android.sample.exoplayer.ServiceUtils.isServiceRunning;
+import static com.android.sample.exoplayer.ServiceUtils.startMainService;
 import static com.android.sample.exoplayer.MainActivity.mPlayingSubject;
 import static com.android.sample.exoplayer.MainActivity.mSampleSubject;
-import static com.android.sample.exoplayer.RxSubject.unsubscribe;
+import static com.android.sample.exoplayer.RxMainSubject.unsubscribe;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT;
 
@@ -55,7 +55,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = ONE_SECOND * 3;
     private static final String POSITION = "position";
-    static RxSubject<Boolean> mExoPlayerPlayingSubject = new RxSubject<>();
+    static final RxMainSubject<Boolean> mExoPlayerPlayingSubject = new RxMainSubject<>();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private static MediaSessionCompat mMediaSession;
     private SimpleExoPlayer mExoPlayer;

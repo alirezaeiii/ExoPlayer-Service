@@ -30,9 +30,9 @@ import java.util.Objects;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-import static com.android.sample.exoplayer.AppUtils.ONE_SECOND;
+import static com.android.sample.exoplayer.ServiceUtils.ONE_SECOND;
 import static com.android.sample.exoplayer.MainService.mExoPlayerPlayingSubject;
-import static com.android.sample.exoplayer.RxSubject.unsubscribe;
+import static com.android.sample.exoplayer.RxMainSubject.unsubscribe;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressBar mProgressBar;
     private ImageView mArrow;
     private boolean isPlaying = true;
-    static RxSubject<Boolean> mPlayingSubject = new RxSubject<>();
-    static RxSubject<Sample> mSampleSubject = new RxSubject<>();
+    static final RxMainSubject<Boolean> mPlayingSubject = new RxMainSubject<>();
+    static final RxMainSubject<Sample> mSampleSubject = new RxMainSubject<>();
 
     /**
      * Create our connection to the service to be used in our bindService call.

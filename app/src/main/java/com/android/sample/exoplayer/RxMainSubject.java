@@ -5,11 +5,11 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-public class RxSubject<T> {
+public class RxMainSubject<T> {
 
     private final Subject<T> subject;
 
-    public RxSubject() {
+    public RxMainSubject() {
         subject = PublishSubject.create();
     }
 
