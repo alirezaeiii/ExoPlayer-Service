@@ -43,8 +43,8 @@ import io.reactivex.functions.Consumer;
 import static com.android.sample.exoplayer.Constants.ONE_SECOND;
 import static com.android.sample.exoplayer.ServiceUtils.isServiceRunning;
 import static com.android.sample.exoplayer.ServiceUtils.startMainService;
-import static com.android.sample.exoplayer.MainActivity.mPlayingSubject;
-import static com.android.sample.exoplayer.MainActivity.mSampleSubject;
+import static com.android.sample.exoplayer.MainActivity.PLAYING_SUBJECT;
+import static com.android.sample.exoplayer.MainActivity.SAMPLE_SUBJECT;
 import static com.android.sample.exoplayer.RxMainSubject.unsubscribe;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT;
@@ -57,7 +57,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = ONE_SECOND * 3;
     private static final String POSITION = "position";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    static final RxMainSubject<Boolean> mExoPlayerPlayingSubject = new RxMainSubject<>();
+    static final RxMainSubject<Boolean> EXO_PLAYER_PLAYING_SUBJECT = new RxMainSubject<>();
     private static MediaSessionCompat mMediaSession;
     private SimpleExoPlayer mExoPlayer;
     private PlaybackStateCompat.Builder mStateBuilder;
@@ -66,7 +66,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private final List<Sample> mSamples = new ArrayList<>();
     private boolean isBuffered = false;
 
-    private final Disposable mPlayingDisposable = mExoPlayerPlayingSubject.subscribe(new Consumer<Boolean>() {
+    private final Disposable mPlayingDisposable = EXO_PLAYER_PLAYING_SUBJECT.subscribe(new Consumer<Boolean>() {
         @Override
         public void accept(Boolean isPlaying) {
             mExoPlayer.setPlayWhenReady(isPlaying);
@@ -282,7 +282,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     public void onIsPlayingChanged(boolean isPlaying) {
         Log.d(TAG, "onIsPlayingChanged()");
         updateNotification();
-        mPlayingSubject.publish(mExoPlayer.getPlayWhenReady());
+        PLAYING_SUBJECT.publish(mExoPlayer.getPlayWhenReady());
     }
 
     /**
@@ -347,7 +347,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private void onPositionDiscontinuity() {
         mExoPlayer.setPlayWhenReady(true);
         updateNotification();
-        mSampleSubject.publish(mSamples.get(mExoPlayer.getCurrentWindowIndex()));
+        SAMPLE_SUBJECT.publish(mSamples.get(mExoPlayer.getCurrentWindowIndex()));
     }
 
     /**

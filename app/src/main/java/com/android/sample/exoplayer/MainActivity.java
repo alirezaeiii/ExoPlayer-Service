@@ -31,7 +31,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 import static com.android.sample.exoplayer.Constants.ONE_SECOND;
-import static com.android.sample.exoplayer.MainService.mExoPlayerPlayingSubject;
+import static com.android.sample.exoplayer.MainService.EXO_PLAYER_PLAYING_SUBJECT;
 import static com.android.sample.exoplayer.RxMainSubject.unsubscribe;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressBar mProgressBar;
     private ImageView mArrow;
     private boolean isPlaying = true;
-    static final RxMainSubject<Boolean> mPlayingSubject = new RxMainSubject<>();
-    static final RxMainSubject<Sample> mSampleSubject = new RxMainSubject<>();
+    static final RxMainSubject<Boolean> PLAYING_SUBJECT = new RxMainSubject<>();
+    static final RxMainSubject<Sample> SAMPLE_SUBJECT = new RxMainSubject<>();
 
     /**
      * Create our connection to the service to be used in our bindService call.
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    private final Disposable mPlayingDisposable = mPlayingSubject.subscribe(new Consumer<Boolean>() {
+    private final Disposable mPlayingDisposable = PLAYING_SUBJECT.subscribe(new Consumer<Boolean>() {
         @Override
         public void accept(Boolean isPlaying) {
             MainActivity.this.isPlaying = isPlaying;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     });
 
-    private final Disposable mSampleDisposable = mSampleSubject.subscribe(new Consumer<Sample>() {
+    private final Disposable mSampleDisposable = SAMPLE_SUBJECT.subscribe(new Consumer<Sample>() {
         @Override
         public void accept(Sample sample) {
             mPlayerView.setDefaultArtwork(Sample.getComposerArtBySampleID(
@@ -193,6 +193,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void playPauseClick(View view) {
         isPlaying = !isPlaying;
         mBtnPlayPause.setImageDrawable(isPlaying ? mPauseDrawable : mPlayDrawable);
-        mExoPlayerPlayingSubject.publish(isPlaying);
+        EXO_PLAYER_PLAYING_SUBJECT.publish(isPlaying);
     }
 }
