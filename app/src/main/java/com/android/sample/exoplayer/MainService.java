@@ -55,8 +55,8 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = ONE_SECOND * 3;
     private static final String POSITION = "position";
-    static final RxMainSubject<Boolean> mExoPlayerPlayingSubject = new RxMainSubject<>();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
+    static final RxMainSubject<Boolean> mExoPlayerPlayingSubject = new RxMainSubject<>();
     private static MediaSessionCompat mMediaSession;
     private SimpleExoPlayer mExoPlayer;
     private PlaybackStateCompat.Builder mStateBuilder;

@@ -1,5 +1,6 @@
 package com.android.sample.exoplayer;
 
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
@@ -13,11 +14,11 @@ public class RxMainSubject<T> {
         subject = PublishSubject.create();
     }
 
-    public Disposable subscribe(Consumer<T> action) {
+    public Disposable subscribe(@NonNull Consumer<T> action) {
         return subject.subscribe(action);
     }
 
-    public void publish(T message) {
+    public void publish(@NonNull T message) {
         subject.onNext(message);
     }
 
