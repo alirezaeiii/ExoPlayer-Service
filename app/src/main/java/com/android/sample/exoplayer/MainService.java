@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
@@ -326,16 +327,14 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     }
 
     private void updateNotification() {
-        Log.d(TAG, "updateNotification()");
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mExoPlayer.getDuration() > 0) {
+                if (mExoPlayer.getDuration() == C.TIME_UNSET) {
+                    mHandler.postDelayed(this, UPDATE_NOTIFICATION_DELAY);
+                } else {
                     mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
                     mMediaSession.setMetadata(mMetadataBuilder.build());
-                } else {
-                    Log.d(TAG, "setMetaData delayed");
-                    mHandler.postDelayed(this, UPDATE_NOTIFICATION_DELAY);
                 }
             }
         });
