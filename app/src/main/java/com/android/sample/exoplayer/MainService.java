@@ -40,7 +40,7 @@ import java.util.List;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-import static com.android.sample.exoplayer.ServiceUtils.ONE_SECOND;
+import static com.android.sample.exoplayer.Constants.ONE_SECOND;
 import static com.android.sample.exoplayer.ServiceUtils.isServiceRunning;
 import static com.android.sample.exoplayer.ServiceUtils.startMainService;
 import static com.android.sample.exoplayer.MainActivity.mPlayingSubject;

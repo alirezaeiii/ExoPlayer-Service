@@ -4,12 +4,8 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.util.Log;
 
-class ServiceUtils {
-
-    private static final String TAG = ServiceUtils.class.getSimpleName();
-    public static final long ONE_SECOND = 1000;
+public class ServiceUtils {
 
     private ServiceUtils() {
     }
@@ -26,12 +22,8 @@ class ServiceUtils {
 
     public static void startMainService(Context context, Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d(TAG, "startForegroundService()");
             context.startForegroundService(intent);
-            Intent myIntent = new Intent(context, MainService.class);
-            context.startService(myIntent);
-        } else {
-            context.startService(intent);
         }
+        context.startService(intent);
     }
 }

@@ -30,7 +30,7 @@ import java.util.Objects;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-import static com.android.sample.exoplayer.ServiceUtils.ONE_SECOND;
+import static com.android.sample.exoplayer.Constants.ONE_SECOND;
 import static com.android.sample.exoplayer.MainService.mExoPlayerPlayingSubject;
 import static com.android.sample.exoplayer.RxMainSubject.unsubscribe;
 
