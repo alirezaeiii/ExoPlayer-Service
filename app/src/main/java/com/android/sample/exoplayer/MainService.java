@@ -44,6 +44,7 @@ import static com.android.sample.exoplayer.Constants.ONE_SECOND;
 import static com.android.sample.exoplayer.MainActivity.PLAYING_SUBJECT;
 import static com.android.sample.exoplayer.MainActivity.SAMPLE_SUBJECT;
 import static com.android.sample.exoplayer.RxMainSubject.unsubscribe;
+import static com.android.sample.exoplayer.ServiceUtils.startMainService;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION;
 import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT;
 
@@ -463,12 +464,5 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             Intent startIntent = new Intent(context, MainService.class);
             startMainService(context, startIntent);
         }
-    }
-
-    private static void startMainService(Context context, Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        }
-        context.startService(intent);
     }
 }
