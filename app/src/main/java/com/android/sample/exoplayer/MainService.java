@@ -41,8 +41,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 import static com.android.sample.exoplayer.Constants.ONE_SECOND;
-import static com.android.sample.exoplayer.ServiceUtils.isServiceRunning;
-import static com.android.sample.exoplayer.ServiceUtils.startMainService;
 import static com.android.sample.exoplayer.MainActivity.PLAYING_SUBJECT;
 import static com.android.sample.exoplayer.MainActivity.SAMPLE_SUBJECT;
 import static com.android.sample.exoplayer.RxMainSubject.unsubscribe;
@@ -55,7 +53,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private static final long UPDATE_NOTIFICATION_DELAY = ONE_SECOND >> 7;
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = ONE_SECOND * 3;
-    private static final String POSITION = "position";
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     static final RxMainSubject<Boolean> EXO_PLAYER_PLAYING_SUBJECT = new RxMainSubject<>();
     private static MediaSessionCompat mMediaSession;
@@ -90,19 +87,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     @Override
     public IBinder onBind(Intent intent) {
         return new MainServiceBinder();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand()");
-        if (intent.hasExtra(Intent.EXTRA_INTENT)) {
-            Intent myIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
-            MediaButtonReceiver.handleIntent(mMediaSession, myIntent);
-        } else if (intent.hasExtra(POSITION)) {
-            long position = intent.getLongExtra(POSITION, 0);
-            mExoPlayer.seekTo(position);
-        }
-        return super.onStartCommand(intent, flags, startId);
     }
 
     /**
@@ -316,13 +300,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         @Override
         public void onSeekTo(long pos) {
             Log.d(TAG, "onSeekTo()");
-            if (mExoPlayer == null) {
-                Intent myIntent = new Intent(getApplicationContext(), MainService.class);
-                myIntent.putExtra(POSITION, pos);
-                startMainService(getApplicationContext(), myIntent);
-            } else {
-                mExoPlayer.seekTo(pos);
-            }
+            mExoPlayer.seekTo(pos);
         }
     }
 
@@ -462,13 +440,7 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         @Override
         public void onReceive(Context context, final Intent intent) {
             Log.d(TAG, "MediaReceiver$onReceive()");
-            if (isServiceRunning(context, MainService.class)) {
-                MediaButtonReceiver.handleIntent(mMediaSession, intent);
-            } else {
-                Intent myIntent = new Intent(context, MainService.class);
-                myIntent.putExtra(Intent.EXTRA_INTENT, intent);
-                startMainService(context, myIntent);
-            }
+            MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
     }
 
@@ -491,5 +463,12 @@ public class MainService extends Service implements ExoPlayer.EventListener {
             Intent startIntent = new Intent(context, MainService.class);
             startMainService(context, startIntent);
         }
+    }
+
+    private static void startMainService(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        }
+        context.startService(intent);
     }
 }
