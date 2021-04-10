@@ -12,7 +12,7 @@ ExoPlayer is an application level media player for Android. It provides an alter
 ## Licence
     MIT License
 
-    Copyright (c) 2019 Mohammadali Rezaei
+    Copyright (c) 2020 Mohammadali Rezaei
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
