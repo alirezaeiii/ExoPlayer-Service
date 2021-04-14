@@ -51,7 +51,6 @@ import static com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_SEEK_ADJ
 public class MainService extends Service implements ExoPlayer.EventListener {
 
     private static final String TAG = MainService.class.getSimpleName();
-    private static final long UPDATE_NOTIFICATION_DELAY = ONE_SECOND >> 7;
     private static final int NOTIFICATION_ID = 1;
     private static final long MAX_POSITION_FOR_SEEK_TO_PREVIOUS = ONE_SECOND * 3;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -309,12 +308,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (mExoPlayer.getDuration() == C.TIME_UNSET) {
-                    mHandler.postDelayed(this, UPDATE_NOTIFICATION_DELAY);
-                } else {
+                if (mExoPlayer.getDuration() != C.TIME_UNSET) {
                     mMetadataBuilder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mExoPlayer.getDuration());
                     mMediaSession.setMetadata(mMetadataBuilder.build());
                 }
+                mHandler.post(this);
             }
         });
         PlaybackStateCompat playbackStateCompat = mStateBuilder.build();
