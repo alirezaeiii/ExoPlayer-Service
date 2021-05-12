@@ -1,9 +1,6 @@
 # ExoPlayer-Service
 A sample to showcase ExoPlayer inside a Service in order to play local audio files in assets.
 
-## About
-ExoPlayer is an application level media player for Android. It provides an alternative to Android’s MediaPlayer API for playing audio and video both locally and over the Internet. ExoPlayer supports features not currently supported by Android’s MediaPlayer API, including DASH and SmoothStreaming adaptive playbacks. Unlike the MediaPlayer API, ExoPlayer is easy to customize and extend, and can be updated through Play Store application updates.
-
 ## Libraries
 * [Android Jetpack](https://developer.android.com/jetpack)
    * [Media](https://developer.android.com/jetpack/androidx/releases/media) is a library contains classes that are helpful for buiding apps that play audio and video. 
