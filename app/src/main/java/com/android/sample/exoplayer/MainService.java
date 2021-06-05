@@ -234,7 +234,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         }
 
         if (playbackState == ExoPlayer.STATE_BUFFERING && !isBuffered) {
-            Log.d(TAG, "Buffered");
             isBuffered = true;
         } else if (playbackState == ExoPlayer.STATE_READY && !playWhenReady && isBuffered) {
             updateNotification();
