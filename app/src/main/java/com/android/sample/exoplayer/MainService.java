@@ -61,7 +61,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
     private MediaMetadataCompat.Builder mMetadataBuilder;
     private NotificationManager mNotificationManager;
     private final List<Sample> mSamples = new ArrayList<>();
-    private boolean isBuffered = false;
 
     private final Disposable mPlayingDisposable = EXO_PLAYER_PLAYING_SUBJECT.subscribe(new Consumer<Boolean>() {
         @Override
@@ -227,18 +226,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
-            updateNotification();
         } else if (playbackState == ExoPlayer.STATE_READY) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
         }
-
-        if (playbackState == ExoPlayer.STATE_BUFFERING && !isBuffered) {
-            isBuffered = true;
-        } else if (playbackState == ExoPlayer.STATE_READY && !playWhenReady && isBuffered) {
-            updateNotification();
-            isBuffered = false;
-        }
+        updateNotification();
     }
 
     @Override
@@ -255,10 +247,11 @@ public class MainService extends Service implements ExoPlayer.EventListener {
                                     PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
                                     PlaybackStateCompat.ACTION_PLAY_PAUSE |
                                     PlaybackStateCompat.ACTION_SEEK_TO);
-            onPositionDiscontinuity();
         } else if (reason == DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
-            onPositionDiscontinuity();
+            mExoPlayer.setPlayWhenReady(true);
         }
+        updateNotification();
+        SAMPLE_SUBJECT.publish(mSamples.get(mExoPlayer.getCurrentWindowIndex()));
     }
 
     @Override
@@ -318,12 +311,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
         mMediaSession.setPlaybackState(playbackStateCompat);
         Sample sample = mSamples.get(mExoPlayer.getCurrentWindowIndex());
         showNotification(playbackStateCompat, sample);
-    }
-
-    private void onPositionDiscontinuity() {
-        mExoPlayer.setPlayWhenReady(true);
-        updateNotification();
-        SAMPLE_SUBJECT.publish(mSamples.get(mExoPlayer.getCurrentWindowIndex()));
     }
 
     /**
