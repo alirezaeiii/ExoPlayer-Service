@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -36,7 +35,6 @@ import static com.android.sample.exoplayer.RxMainSubject.unsubscribe;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
     private static final long UPDATE_PROGRESS_DELAY = ONE_SECOND >> 3;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private PlayerView mPlayerView;
@@ -110,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -157,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onStart() {
-        Log.d(TAG, "onStart()");
         super.onStart();
         Intent intent = new Intent(this, MainService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -166,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStop()");
         super.onStop();
         mHandler.removeCallbacksAndMessages(null);
         unbindService(mConnection);
@@ -174,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy()");
         super.onDestroy();
         unsubscribe(mPlayingDisposable, mSampleDisposable);
     }

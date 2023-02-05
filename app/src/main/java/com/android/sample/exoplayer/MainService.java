@@ -71,7 +71,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "onCreate()");
         super.onCreate();
 
         // Initialize the Media Session.
@@ -169,7 +168,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        Log.d(TAG, "onTaskRemoved()");
         super.onTaskRemoved(rootIntent);
         if (!mExoPlayer.getPlayWhenReady()) {
             mNotificationManager.cancel(NOTIFICATION_ID);
@@ -193,7 +191,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      */
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy()");
         super.onDestroy();
         MainPosition mainPosition = new MainPosition(mExoPlayer.getCurrentWindowIndex(),
                 mExoPlayer.getCurrentPosition());
@@ -222,7 +219,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
      */
     @Override
     public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
-        Log.d(TAG, "onPlayerStateChanged()");
         if (playbackState == ExoPlayer.STATE_READY && playWhenReady) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
@@ -235,7 +231,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     @Override
     public void onPositionDiscontinuity(int reason) {
-        Log.d(TAG, "onPositionDiscontinuity()");
         if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION) {
             mStateBuilder = new PlaybackStateCompat.Builder()
                     .setState(PlaybackStateCompat.STATE_PLAYING, mExoPlayer.getCurrentWindowIndex(), 1f)
@@ -256,7 +251,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
     @Override
     public void onIsPlayingChanged(boolean isPlaying) {
-        Log.d(TAG, "onIsPlayingChanged()");
         updateNotification();
         PLAYING_SUBJECT.publish(mExoPlayer.getPlayWhenReady());
     }
@@ -291,7 +285,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         @Override
         public void onSeekTo(long pos) {
-            Log.d(TAG, "onSeekTo()");
             mExoPlayer.seekTo(pos);
         }
     }
@@ -424,7 +417,6 @@ public class MainService extends Service implements ExoPlayer.EventListener {
 
         @Override
         public void onReceive(Context context, final Intent intent) {
-            Log.d(TAG, "MediaReceiver$onReceive()");
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
     }
